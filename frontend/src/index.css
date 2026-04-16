@@ -2,114 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: 30 18% 8%;
+  --foreground: 42 48% 90%;
+  --card: 30 18% 10%;
+  --card-foreground: 42 48% 90%;
+  --popover: 30 18% 8%;
+  --popover-foreground: 42 48% 90%;
+  --primary: 43 52% 55%;
+  --primary-foreground: 30 25% 8%;
+  --secondary: 30 18% 14%;
+  --secondary-foreground: 42 48% 90%;
+  --muted: 30 15% 18%;
+  --muted-foreground: 39 26% 65%;
+  --accent: 43 52% 55%;
+  --accent-foreground: 30 25% 8%;
+  --destructive: 0 60% 45%;
+  --destructive-foreground: 42 48% 90%;
+  --border: 36 30% 32%;
+  --input: 30 18% 14%;
+  --ring: 43 52% 55%;
+  --radius: 0.25rem;
+}
+
+html, body, #root {
+  background: #1B1810;
+  color: #F5EDD6;
+  min-height: 100%;
+}
+
 body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  font-family: 'EB Garamond', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #1B1810;
+  color: #F5EDD6;
 }
 
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+::selection {
+  background: #C9A84C;
+  color: #1B1810;
 }
+
+/* Thin custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #1B1810; }
+::-webkit-scrollbar-thumb { background: #7A5C2E; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
+
+/* Utility classes */
+.font-display { font-family: 'Cormorant Garamond', serif; }
+.font-body { font-family: 'EB Garamond', serif; }
+.font-ui { font-family: 'Josefin Sans', sans-serif; letter-spacing: 0.05em; }
+.font-script { font-family: 'Pinyon Script', cursive; }
+
+/* Gold warm glow (NO SHIMMER) */
+.glow-gold { box-shadow: 0 0 24px rgba(201, 168, 76, 0.18); }
+.glow-gold-strong { box-shadow: 0 0 44px rgba(201, 168, 76, 0.35), inset 0 0 14px rgba(232, 201, 122, 0.15); }
+.ring-gold { box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.45), 0 0 30px rgba(201, 168, 76, 0.18); }
+
+.btn-gold {
+  background: #C9A84C;
+  color: #1B1810;
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  border: 1px solid #C9A84C;
+  transition: all 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  font-size: 0.85rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.btn-gold:hover { background: #E8C97A; border-color: #E8C97A; transform: translateY(-1px); box-shadow: 0 0 30px rgba(232, 201, 122, 0.35); }
+.btn-gold:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.btn-outline-gold {
+  background: transparent;
+  color: #E8C97A;
+  border: 1px solid #7A5C2E;
+  font-family: 'Josefin Sans', sans-serif;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  font-size: 0.85rem;
+  transition: all 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.btn-outline-gold:hover { background: #231F17; border-color: #C9A84C; color: #E8C97A; }
+
+/* Luxury card shell */
+.card-lux {
+  background: #231F17;
+  border: 1px solid rgba(122, 92, 46, 0.3);
+  overflow: hidden;
+  transition: all 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+.card-lux:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(201, 168, 76, 0.5);
+  box-shadow: 0 22px 48px rgba(0,0,0,0.4), 0 0 32px rgba(201, 168, 76, 0.15);
+}
+
+/* Gold divider */
+.hr-gold { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.7), transparent); }
+
+/* Input fields */
+.lux-input {
+  background: rgba(26, 21, 16, 0.6);
+  border: 1px solid rgba(122, 92, 46, 0.5);
+  color: #F5EDD6;
+  font-family: 'EB Garamond', serif;
+  padding: 0.85rem 1rem;
+  width: 100%;
+  transition: all 400ms ease;
+  outline: none;
+}
+.lux-input:focus { border-color: #C9A84C; box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.4); }
+.lux-label { font-family: 'Josefin Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.7rem; color: #7A5C2E; margin-bottom: 0.5rem; display: block; }
+
+/* Filter pill */
+.pill { border: 1px solid #7A5C2E; color: #F5EDD6; padding: 0.5rem 1.25rem; border-radius: 999px; font-family: 'Josefin Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; transition: all 400ms ease; cursor: pointer; white-space: nowrap; }
+.pill:hover { border-color: #C9A84C; color: #E8C97A; }
+.pill-active { background: #C9A84C; color: #1B1810; border-color: #C9A84C; box-shadow: 0 0 18px rgba(201, 168, 76, 0.25); }
+
+/* Page container */
+.lux-container { max-width: 1360px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* Gold particles */
+.gold-particle { position: absolute; width: 3px; height: 3px; background: radial-gradient(circle, #E8C97A 0%, transparent 70%); border-radius: 50%; opacity: 0.5; }
+
+/* Glassmorphic */
+.glass-light {
+  background: rgba(250, 247, 242, 0.96);
+  color: #1B1810;
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(232, 201, 122, 0.3);
+}
+.glass-dark {
+  background: rgba(26, 21, 16, 0.86);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+}
+
+/* Vignette overlay */
+.vignette::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%); pointer-events: none; }
+
+/* Hide scrollbar on horizontal sliders */
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
 @layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
-}
-
-@layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
-}
-
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
-
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
-    }
+  * { @apply border-border; }
 }
