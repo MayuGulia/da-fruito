@@ -1,0 +1,70 @@
+{
+  "theme": "Dark",
+  "archetype": "5 (Jewel & Luxury)",
+  "css_variables": {
+    "--bg-primary": "#1B1810",
+    "--bg-secondary": "#231F17",
+    "--bg-modal": "#FAF7F2",
+    "--bg-darkest": "#1A1510",
+    "--color-cta": "#C9A84C",
+    "--color-heading": "#E8C97A",
+    "--color-subtext": "#7A5C2E",
+    "--color-body": "#F5EDD6",
+    "--color-accent": "#B8C4A8",
+    "--color-tag": "#5C2D3A"
+  },
+  "typography": {
+    "fonts": {
+      "headings": "Cormorant Garamond",
+      "body": "EB Garamond",
+      "ui": "Josefin Sans",
+      "gift_card": "Pinyon Script"
+    },
+    "guidelines": [
+      "Use Cormorant Garamond for all H1-H4 display text. Never use sans-serif for headings.",
+      "Use EB Garamond for long-form paragraphs.",
+      "Use Josefin Sans for UI elements, buttons, nav links, and small overlines.",
+      "Use Pinyon Script exclusively for the Gift Card builder step."
+    ]
+  },
+  "styles": {
+    "buttons": {
+      "primary": "bg-[#C9A84C] text-[#1B1810] font-josefin uppercase tracking-wider hover:bg-[#E8C97A] transition-colors duration-500",
+      "outline": "border border-[#7A5C2E] text-[#E8C97A] font-josefin uppercase tracking-wider hover:bg-[#231F17] hover:border-[#C9A84C] transition-all duration-500"
+    },
+    "cards": {
+      "luxury_shell": "bg-[#231F17] border border-[#7A5C2E]/30 rounded-none relative overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:border-[#C9A84C]/50 shadow-[0_0_15px_rgba(201,168,76,0)] hover:shadow-[0_0_20px_rgba(201,168,76,0.15)]"
+    },
+    "modals": {
+      "glassmorphic": "bg-[#FAF7F2]/95 backdrop-blur-xl border border-[#FAF7F2]/20 shadow-2xl text-[#1B1810]"
+    },
+    "filter_pills": {
+      "default": "border border-[#7A5C2E] text-[#F5EDD6] rounded-full px-6 py-2 font-josefin text-sm hover:border-[#C9A84C] transition-all duration-300",
+      "active": "bg-[#C9A84C] text-[#1B1810] border-[#C9A84C] rounded-full px-6 py-2 font-josefin text-sm shadow-[0_0_10px_rgba(201,168,76,0.3)]"
+    }
+  },
+  "animation_utility_classes": {
+    "reveal": "opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-in-out data-[in-view=true]:opacity-100 data-[in-view=true]:translate-y-0 data-[in-view=true]:blur-0",
+    "glow_hover": "hover:shadow-[0_0_30px_rgba(201,168,76,0.2)] hover:border-[#C9A84C]",
+    "forbidden": "NO SHIMMER (e.g., animate-pulse or skeleton gradients). Use warm glow and slow fades."
+  },
+  "media": {
+    "hero_hamper": "https://images.unsplash.com/photo-1732928730431-11c206639a38?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBnaWZ0JTIwaGFtcGVyJTIwZGFya3xlbnwwfHx8fDE3NzYzNjk1ODF8MA&ixlib=rb-4.1.0&q=85",
+    "products": [
+      "https://images.unsplash.com/photo-1647168672642-695e96782922?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBnaWZ0JTIwaGFtcGVyJTIwZGFya3xlbnwwfHx8fDE3NzYzNjk1ODF8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1732928729959-2e8fdb5a5cd7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBnaWZ0JTIwaGFtcGVyJTIwZGFya3xlbnwwfHx8fDE3NzYzNjk1ODF8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1766393030762-0f1940c17548?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxnb2xkJTIwcmliYm9uJTIwdmVsdmV0fGVufDB8fHx8MTc3NjM2OTU4MHww&ixlib=rb-4.1.0&q=85"
+    ],
+    "abstract_backgrounds": [
+      "https://images.unsplash.com/photo-1754213363673-6f4eb59edf33?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MTJ8MHwxfHNlYXJjaHwxfHxkYXJrJTIwbW9vZHklMjBhZXN0aGV0aWN8ZW58MHx8fHwxNzc2MzY5NTg4fDA&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "instructions_to_main_agent": {
+    "preloader": "Cinematic preloader using #1A1510 background and #E8C97A text. Fade out smoothly, no abrupt jump.",
+    "navbar": "Fixed Navbar with mega dropdown. Glassmorphic backdrop-blur-md on scroll.",
+    "hero": "100vh Hero section with image overlay. Copy: 'The Art of Gifting, Perfected.'",
+    "builder": "5-step Bespoke Hamper Builder (vessels -> budget -> confections -> gift card -> AI assembly -> details). Use Framer Motion for smooth transitions. Modals must use #FAF7F2 interior.",
+    "testing": "All interactive elements MUST include data-testid attribute.",
+    "motion": "Use Framer Motion with spring physics. No shimmer."
+  }
+}
