@@ -4,8 +4,10 @@ import { FeaturedHampers } from "../components/home/FeaturedHampers";
 import { ValueStrip } from "../components/home/ValueStrip";
 import { Collections } from "../components/home/Collections";
 import { Materials } from "../components/home/Materials";
+import { ArtisanStory } from "../components/home/ArtisanStory";
 import { About } from "../components/home/About";
-import { InstagramStrip } from "../components/home/Instagram";
+import { Glimpses } from "../components/home/Glimpses";
+import { ShopInstagram } from "../components/home/ShopInstagram";
 import { Testimonials } from "../components/home/Testimonials";
 import { AsSeenIn } from "../components/home/AsSeenIn";
 import { Contact } from "../components/home/Contact";
@@ -18,10 +20,12 @@ export default function Home() {
       <ValueStrip />
       <Collections />
       <Materials />
+      <ArtisanStory />
       <About />
+      <Glimpses />
       <Testimonials />
       <AsSeenIn />
-      <InstagramStrip />
+      <ShopInstagram />
       <Contact />
     </div>
   );

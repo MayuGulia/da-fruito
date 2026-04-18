@@ -59,83 +59,46 @@ const OCCASION_TILES = [
   ]},
 ];
 
-// The 9-frame assembly animation orchestrated with framer-motion
-const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
-  const [f, setF] = useState(0);
+// Elegant image-loading bar shown while the AI composes the bespoke hamper preview.
+// Replaces the earlier brand-animated ribbon/bow assembly sequence per user request.
+const ComposingBar = ({ active }) => {
+  const [pct, setPct] = useState(0);
   useEffect(() => {
-    const seq = [0, 400, 800, 1200, 1600, 2000, 2400, 2800, 3200, 3600];
-    const timers = seq.map((t, i) => setTimeout(() => setF(i), t));
-    const done = setTimeout(() => onDone && onDone(), 4000);
-    return () => { timers.forEach(clearTimeout); clearTimeout(done); };
-  }, [onDone]);
+    if (!active) { setPct(100); return; }
+    setPct(0);
+    let p = 0;
+    const id = setInterval(() => {
+      // ease toward 92% while active; jump to 100 when active flips to false
+      p = p + (92 - p) * 0.08;
+      setPct(Math.min(92, Math.round(p)));
+    }, 180);
+    return () => clearInterval(id);
+  }, [active]);
 
   return (
-    <div className="relative w-full h-[420px] md:h-[520px] bg-gradient-to-b from-[#EEF5F4] to-[#EEF5F4] rounded-2xl overflow-hidden border border-[#C8DEDD]">
-      {/* soft radial */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(232,207,196,0.4) 0%, transparent 65%)" }} />
-      {/* frame 1 fade to black already (bg) */}
-      {/* frame 2 — vessel */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: f >= 1 ? 1 : 0, scale: f >= 1 ? 1 : 0.6 }}
-        transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-      >
-        <div className="w-48 h-32 md:w-60 md:h-40 rounded-t-[140px] rounded-b-md bg-gradient-to-b from-white to-[#E6F4F3] border border-[#2A7E7C]/50 shadow-[0_20px_50px_rgba(176,125,98,0.18)]" />
-      </motion.div>
-      {/* frame 3 — confections fly in */}
-      {[...Array(6)].map((_, i) => (
+    <div className="w-full max-w-xl mx-auto" data-testid="composing-bar">
+      <div className="flex items-center justify-between mb-3 font-ui text-[0.68rem] tracking-[0.3em] uppercase text-[#2A7E7C]">
+        <span>{active ? "Composing your hamper" : "Composed"}</span>
+        <span>{active ? `${pct}%` : "100%"}</span>
+      </div>
+      <div className="relative h-[6px] bg-[#E6F4F3] rounded-full overflow-hidden">
         <motion.div
-          key={i}
-          className="absolute w-6 h-6 md:w-8 md:h-8 rounded-full"
-          style={{ background: `radial-gradient(circle at 30% 30%, ${i % 2 ? '#2A7E7C' : '#7A9E9C'}, #3D5C5A)` }}
-          initial={{ opacity: 0, x: (i - 3) * 120, y: -220, rotate: 0 }}
-          animate={{
-            opacity: f >= 2 ? 1 : 0,
-            x: f >= 3 ? `calc(50vw - 140px + ${(i - 3) * 18}px)` : (i - 3) * 120,
-            y: f >= 3 ? "calc(50vh - 10px)" : 0,
-            rotate: f >= 3 ? 360 : 0,
-          }}
-          transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22,1,0.36,1] }}
+          className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#2A7E7C] via-[#3D9E9C] to-[#C4A35A] rounded-full"
+          initial={{ width: "0%" }}
+          animate={{ width: active ? `${pct}%` : "100%" }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         />
-      ))}
-      {/* frame 5 — gift card */}
-      {giftCardEnabled && (
-        <motion.div
-          initial={{ opacity: 0, y: -200, rotate: -10 }}
-          animate={{ opacity: f >= 4 ? 1 : 0, y: f >= 4 ? 0 : -200, rotate: f >= 4 ? 0 : -10 }}
-          transition={{ duration: 0.7, ease: [0.22,1,0.36,1] }}
-          className="absolute left-1/2 top-[60%] -translate-x-1/2 w-40 h-24 bg-white border border-[#2A7E7C]/60 rounded-md shadow-[0_10px_30px_rgba(176,125,98,0.2)] flex items-center justify-center"
-        >
-          <span className="font-script text-xl text-[#B07D62]">with love</span>
-        </motion.div>
-      )}
-      {/* frame 7 — ribbon draws */}
-      <motion.svg viewBox="0 0 400 400" className="absolute inset-0 w-full h-full pointer-events-none">
-        <motion.path
-          d="M 100 200 Q 200 140 300 200"
-          stroke="#2A7E7C" strokeWidth="4" fill="none"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: f >= 6 ? 1 : 0, opacity: f >= 6 ? 1 : 0 }}
-          transition={{ duration: 0.9 }}
-        />
-      </motion.svg>
-      {/* frame 8 — bow */}
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }} animate={{ scale: f >= 7 ? 1 : 0, opacity: f >= 7 ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
-        className="absolute left-1/2 top-[40%] -translate-x-1/2"
-      >
-        <svg width="80" height="50" viewBox="0 0 80 50">
-          <path d="M 20 25 Q 40 5 60 25 Q 50 45 40 35 Q 30 45 20 25 Z" fill="#E6F4F3" stroke="#2A7E7C" strokeWidth="1.2" />
-        </svg>
-      </motion.div>
-      {/* frame 9 — soft burst */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: f >= 8 ? [0, 0.8, 0] : 0, scale: f >= 8 ? 2.5 : 0.5 }}
-        transition={{ duration: 0.9, ease: "easeOut" }}
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(circle at center, rgba(232,207,196,0.55), transparent 60%)" }}
-      />
+        {active && (
+          <motion.div
+            className="absolute top-0 h-full w-20 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+            animate={{ x: ["-80px", "600px"] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
+          />
+        )}
+      </div>
+      <p className="text-center font-body italic text-[#7A9E9C] mt-4 text-sm">
+        {active ? "Our atelier is carefully arranging each element." : "Your bespoke hamper is ready."}
+      </p>
     </div>
   );
 };
@@ -489,27 +452,42 @@ export default function CreateHamper() {
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Five</div>
                 <h2 className="font-display text-5xl md:text-6xl text-ivory">A Glimpse of Your <em className="italic text-[#C4A35A]">Masterpiece</em></h2>
               </div>
-              <AssemblyAnimation onDone={() => {}} giftCardEnabled={!!giftCard.enabled} />
-              <div className="mt-10 text-center">
-                {loadingImg && (
-                  <div className="font-ui text-[0.7rem] tracking-[0.3em] uppercase text-gold">Composing your hamper…</div>
-                )}
-                {previewImage && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.96, filter: "blur(12px)" }}
-                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    transition={{ duration: 1.0, ease: [0.22,1,0.36,1] }}
-                    className="mt-4 relative"
-                  >
-                    <div className="absolute -inset-8 bg-gold/10 blur-3xl rounded-full pointer-events-none" />
-                    <img src={previewImage} alt="Your bespoke hamper" className="relative mx-auto max-h-[540px] object-contain border border-gold/30" data-testid="preview-image" />
-                    <p className="font-display italic text-ivory/70 mt-4">Your bespoke hamper, as it will be delivered.</p>
-                  </motion.div>
-                )}
-              </div>
-              <div className="flex justify-between mt-10">
-                <button onClick={() => { reset(); setStep(1); }} className="btn-outline-gold" data-testid="redesign">Redesign</button>
-                <button onClick={next} className="btn-gold" data-testid="confirm-proceed">Confirm & Proceed <ChevronRight size={16} /></button>
+
+              {/* Clean image-loading bar (replaces prior branded animation per user request) */}
+              {(loadingImg || !previewImage) && (
+                <div className="min-h-[260px] flex items-center justify-center py-14">
+                  <ComposingBar active={loadingImg || !previewImage} />
+                </div>
+              )}
+
+              {previewImage && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96, filter: "blur(12px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 1.0, ease: [0.22,1,0.36,1] }}
+                  className="mt-4 relative text-center"
+                >
+                  <div className="absolute -inset-8 bg-gold/10 blur-3xl rounded-full pointer-events-none" />
+                  <img src={previewImage} alt="Your bespoke hamper" className="relative mx-auto max-h-[540px] object-contain border border-gold/30 rounded-xl" data-testid="preview-image" />
+                  <p className="font-display italic text-ivory/70 mt-4">Your bespoke hamper, as it will be delivered.</p>
+                </motion.div>
+              )}
+
+              <div className="flex flex-wrap gap-3 items-center justify-between mt-10">
+                <button onClick={back} className="btn-outline-gold" data-testid="preview-back"><ArrowLeft size={14} /> Back</button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => { setStep(2); setPreviewImage(null); }}
+                    className="btn-outline-gold"
+                    data-testid="redesign"
+                  >Redesign Hamper</button>
+                  <button
+                    onClick={() => { reset(); setStep(1); }}
+                    className="btn-outline-gold"
+                    data-testid="create-another"
+                  >Create Another Hamper</button>
+                  <button onClick={next} className="btn-gold" data-testid="confirm-proceed" disabled={!previewImage}>Confirm & Proceed <ChevronRight size={16} /></button>
+                </div>
               </div>
             </div>
           )}
@@ -536,6 +514,13 @@ export default function CreateHamper() {
                   <a href={whatsappCompose()} target="_blank" rel="noreferrer" className="btn-outline-gold" data-testid="action-whatsapp"><Heart size={16} /> Order via WhatsApp</a>
                   <button onClick={() => placeOrder("razorpay")} className="btn-gold" data-testid="action-razorpay"><Sparkles size={16} /> Pay via Razorpay</button>
                   <button onClick={() => placeOrder("cod")} className="btn-outline-gold" data-testid="action-cod">Cash on Delivery</button>
+                </div>
+                <div className="mt-8 flex flex-wrap gap-3 items-center justify-between border-t border-[#C8DEDD] pt-6">
+                  <button onClick={back} className="btn-outline-gold" data-testid="details-back"><ArrowLeft size={14} /> Back to Preview</button>
+                  <div className="flex flex-wrap gap-3">
+                    <button onClick={() => setStep(2)} className="btn-ghost-warm" data-testid="details-redesign">Redesign Hamper</button>
+                    <button onClick={() => { reset(); setStep(1); }} className="btn-ghost-warm" data-testid="details-create-another">Create Another Hamper</button>
+                  </div>
                 </div>
               </div>
               <div className="card-lux p-6 h-fit sticky top-28">
