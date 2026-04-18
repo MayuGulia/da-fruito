@@ -3,31 +3,31 @@
 @tailwind utilities;
 
 :root {
-  --background: 30 18% 8%;
-  --foreground: 42 48% 90%;
-  --card: 30 18% 10%;
-  --card-foreground: 42 48% 90%;
-  --popover: 30 18% 8%;
-  --popover-foreground: 42 48% 90%;
-  --primary: 43 52% 55%;
-  --primary-foreground: 30 25% 8%;
-  --secondary: 30 18% 14%;
-  --secondary-foreground: 42 48% 90%;
-  --muted: 30 15% 18%;
-  --muted-foreground: 39 26% 65%;
-  --accent: 43 52% 55%;
-  --accent-foreground: 30 25% 8%;
-  --destructive: 0 60% 45%;
-  --destructive-foreground: 42 48% 90%;
-  --border: 36 30% 32%;
-  --input: 30 18% 14%;
-  --ring: 43 52% 55%;
-  --radius: 0.25rem;
+  --background: 34 56% 97%;
+  --foreground: 24 22% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 24 22% 15%;
+  --popover: 34 56% 97%;
+  --popover-foreground: 24 22% 15%;
+  --primary: 19 30% 54%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 34 46% 93%;
+  --secondary-foreground: 24 22% 15%;
+  --muted: 34 46% 93%;
+  --muted-foreground: 26 14% 54%;
+  --accent: 19 30% 54%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 60% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 31 26% 83%;
+  --input: 31 26% 83%;
+  --ring: 19 30% 54%;
+  --radius: 0.75rem;
 }
 
 html, body, #root {
-  background: #1B1810;
-  color: #F5EDD6;
+  background: #FDFAF6;
+  color: #2D2420;
   min-height: 100%;
 }
 
@@ -36,20 +36,20 @@ body {
   font-family: 'EB Garamond', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #1B1810;
-  color: #F5EDD6;
+  background-color: #FDFAF6;
+  color: #5C4A3A;
 }
 
 ::selection {
-  background: #C9A84C;
-  color: #1B1810;
+  background: #B07D62;
+  color: #FFFFFF;
 }
 
 /* Thin custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #1B1810; }
-::-webkit-scrollbar-thumb { background: #7A5C2E; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
+::-webkit-scrollbar-track { background: #F5EFE6; }
+::-webkit-scrollbar-thumb { background: #E0D4C8; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #B07D62; }
 
 /* Utility classes */
 .font-display { font-family: 'Cormorant Garamond', serif; }
@@ -57,101 +57,133 @@ body {
 .font-ui { font-family: 'Josefin Sans', sans-serif; letter-spacing: 0.05em; }
 .font-script { font-family: 'Pinyon Script', cursive; }
 
-/* Gold warm glow (NO SHIMMER) */
-.glow-gold { box-shadow: 0 0 24px rgba(201, 168, 76, 0.18); }
-.glow-gold-strong { box-shadow: 0 0 44px rgba(201, 168, 76, 0.35), inset 0 0 14px rgba(232, 201, 122, 0.15); }
-.ring-gold { box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.45), 0 0 30px rgba(201, 168, 76, 0.18); }
+/* Warm terracotta glow (NO SHIMMER) */
+.glow-gold { box-shadow: 0 4px 24px rgba(176, 125, 98, 0.15); }
+.glow-gold-strong { box-shadow: 0 10px 40px rgba(176, 125, 98, 0.28); }
+.ring-gold { box-shadow: 0 0 0 2px rgba(176, 125, 98, 0.55), 0 8px 32px rgba(176, 125, 98, 0.15); }
 
+/* Primary pill button — terracotta */
 .btn-gold {
-  background: #C9A84C;
-  color: #1B1810;
+  background: #B07D62;
+  color: #FFFFFF;
   font-family: 'Josefin Sans', sans-serif;
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 0.85rem 2rem;
-  border: 1px solid #C9A84C;
-  transition: all 550ms cubic-bezier(0.22, 1, 0.36, 1);
-  font-size: 0.85rem;
+  border: 1px solid #B07D62;
+  border-radius: 9999px;
+  transition: all 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  font-size: 0.8rem;
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
-.btn-gold:hover { background: #E8C97A; border-color: #E8C97A; transform: translateY(-1px); box-shadow: 0 0 30px rgba(232, 201, 122, 0.35); }
-.btn-gold:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.btn-gold:hover { background: #8F6048; border-color: #8F6048; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(176,125,98,0.3); }
+.btn-gold:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
+/* Secondary pill button — outlined terracotta */
 .btn-outline-gold {
   background: transparent;
-  color: #E8C97A;
-  border: 1px solid #7A5C2E;
+  color: #B07D62;
+  border: 1px solid #B07D62;
   font-family: 'Josefin Sans', sans-serif;
   letter-spacing: 0.15em; text-transform: uppercase;
   padding: 0.85rem 2rem;
-  font-size: 0.85rem;
-  transition: all 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  transition: all 500ms cubic-bezier(0.22, 1, 0.36, 1);
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
-.btn-outline-gold:hover { background: #231F17; border-color: #C9A84C; color: #E8C97A; }
+.btn-outline-gold:hover { background: #B07D62; border-color: #B07D62; color: #FFFFFF; box-shadow: 0 6px 22px rgba(176,125,98,0.22); }
 
-/* Luxury card shell */
+/* Ghost pill button — neutral */
+.btn-ghost-warm {
+  background: transparent;
+  color: #5C4A3A;
+  border: 1px solid #E0D4C8;
+  font-family: 'Josefin Sans', sans-serif;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 0.75rem 1.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  transition: all 400ms ease;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.btn-ghost-warm:hover { border-color: #B07D62; color: #B07D62; }
+
+/* Luxury card shell — white with warm border */
 .card-lux {
-  background: #231F17;
-  border: 1px solid rgba(122, 92, 46, 0.3);
+  background: #FFFFFF;
+  border: 1px solid #E0D4C8;
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 500ms cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
 }
 .card-lux:hover {
-  transform: translateY(-4px) scale(1.01);
-  border-color: rgba(201, 168, 76, 0.5);
-  box-shadow: 0 22px 48px rgba(0,0,0,0.4), 0 0 32px rgba(201, 168, 76, 0.15);
+  transform: translateY(-4px);
+  border-color: rgba(176, 125, 98, 0.45);
+  box-shadow: 0 8px 32px rgba(176, 125, 98, 0.15);
 }
 
-/* Gold divider */
-.hr-gold { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.7), transparent); }
+/* Gold divider → terracotta gradient */
+.hr-gold { height: 1px; background: linear-gradient(90deg, transparent, rgba(176,125,98,0.65), transparent); }
 
-/* Input fields */
+/* Input fields — white rounded */
 .lux-input {
-  background: rgba(26, 21, 16, 0.6);
-  border: 1px solid rgba(122, 92, 46, 0.5);
-  color: #F5EDD6;
+  background: #FFFFFF;
+  border: 1px solid #E0D4C8;
+  color: #2D2420;
   font-family: 'EB Garamond', serif;
   padding: 0.85rem 1rem;
   width: 100%;
-  transition: all 400ms ease;
+  border-radius: 12px;
+  transition: all 300ms ease;
   outline: none;
 }
-.lux-input:focus { border-color: #C9A84C; box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.4); }
-.lux-label { font-family: 'Josefin Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.7rem; color: #7A5C2E; margin-bottom: 0.5rem; display: block; }
+.lux-input::placeholder { color: #9C8878; }
+.lux-input:focus { border-color: #B07D62; box-shadow: 0 0 0 3px rgba(176, 125, 98, 0.18); }
+.lux-label { font-family: 'Josefin Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.7rem; color: #5C4A3A; margin-bottom: 0.5rem; display: block; font-weight: 500; }
 
-/* Filter pill */
-.pill { border: 1px solid #7A5C2E; color: #F5EDD6; padding: 0.5rem 1.25rem; border-radius: 999px; font-family: 'Josefin Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; transition: all 400ms ease; cursor: pointer; white-space: nowrap; }
-.pill:hover { border-color: #C9A84C; color: #E8C97A; }
-.pill-active { background: #C9A84C; color: #1B1810; border-color: #C9A84C; box-shadow: 0 0 18px rgba(201, 168, 76, 0.25); }
+/* Filter pills */
+.pill { background: #F5EFE6; border: 1px solid #B07D62; color: #B07D62; padding: 0.55rem 1.35rem; border-radius: 9999px; font-family: 'Josefin Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; transition: all 350ms ease; cursor: pointer; white-space: nowrap; font-weight: 500; }
+.pill:hover { background: #E8CFC4; border-color: #8F6048; color: #8F6048; }
+.pill-active { background: #B07D62; color: #FFFFFF; border-color: #B07D62; box-shadow: 0 6px 18px rgba(176, 125, 98, 0.25); }
+.pill-active:hover { background: #8F6048; border-color: #8F6048; color: #FFFFFF; }
 
 /* Page container */
 .lux-container { max-width: 1360px; margin: 0 auto; padding: 0 1.5rem; }
 
-/* Gold particles */
-.gold-particle { position: absolute; width: 3px; height: 3px; background: radial-gradient(circle, #E8C97A 0%, transparent 70%); border-radius: 50%; opacity: 0.5; }
+/* Subtle terracotta particles */
+.gold-particle { position: absolute; width: 3px; height: 3px; background: radial-gradient(circle, #E8CFC4 0%, transparent 70%); border-radius: 50%; opacity: 0.5; }
 
-/* Glassmorphic */
+/* Glassmorphic surfaces */
 .glass-light {
-  background: rgba(250, 247, 242, 0.96);
-  color: #1B1810;
+  background: rgba(255, 255, 255, 0.94);
+  color: #2D2420;
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(232, 201, 122, 0.3);
+  border: 1px solid rgba(224, 212, 200, 0.6);
+  border-radius: 16px;
 }
 .glass-dark {
-  background: rgba(26, 21, 16, 0.86);
+  background: rgba(253, 250, 246, 0.94);
+  color: #2D2420;
   backdrop-filter: blur(22px);
-  border: 1px solid rgba(201, 168, 76, 0.18);
+  border: 1px solid rgba(224, 212, 200, 0.8);
+  border-radius: 16px;
 }
 
-/* Vignette overlay */
-.vignette::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%); pointer-events: none; }
+/* Cream vignette overlay (was dark) */
+.vignette::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(253, 250, 246, 0.35) 100%); pointer-events: none; }
 
 /* Hide scrollbar on horizontal sliders */
 .scrollbar-none { scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Nav link with terracotta underline slide */
+.nav-link { position: relative; color: #5C4A3A; transition: color 300ms ease; }
+.nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: #B07D62; transform: scaleX(0); transform-origin: left; transition: transform 400ms cubic-bezier(0.22,1,0.36,1); }
+.nav-link:hover { color: #B07D62; }
+.nav-link:hover::after { transform: scaleX(1); }
 
 @layer base {
   * { @apply border-border; }

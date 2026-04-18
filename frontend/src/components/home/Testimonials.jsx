@@ -13,10 +13,10 @@ export const Testimonials = () => {
   useEffect(() => { const t = setInterval(() => setI((v) => (v + 1) % QUOTES.length), 6000); return () => clearInterval(t); }, []);
   const q = QUOTES[i];
   return (
-    <section data-testid="testimonials-section" className="py-24 md:py-32 bg-obsidian">
+    <section data-testid="testimonials-section" className="py-24 md:py-32 bg-[#EEF2EC]">
       <div className="lux-container text-center max-w-3xl">
         <div className="flex justify-center gap-1 mb-6">
-          {[...Array(5)].map((_, k) => <Star key={k} size={14} className="fill-gold text-gold" />)}
+          {[...Array(5)].map((_, k) => <Star key={k} size={14} className="fill-[#B07D62] text-[#B07D62]" />)}
         </div>
         <AnimatePresence mode="wait">
           <motion.div
@@ -24,14 +24,14 @@ export const Testimonials = () => {
             initial={{ opacity: 0, y: 10, filter: "blur(6px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} exit={{ opacity: 0, filter: "blur(6px)" }}
             transition={{ duration: 0.8, ease: [0.22,1,0.36,1] }}
           >
-            <blockquote className="font-body italic text-2xl md:text-3xl text-ivory leading-relaxed">"{q.text}"</blockquote>
-            <div className="mt-8 font-ui uppercase tracking-[0.3em] text-[0.72rem] text-antique">{q.name}</div>
-            <div className="mt-1 italic font-body text-berry">{q.occasion}</div>
+            <blockquote className="font-body italic text-2xl md:text-3xl text-[#2D2420] leading-relaxed">"{q.text}"</blockquote>
+            <div className="mt-8 font-ui uppercase tracking-[0.3em] text-[0.72rem] text-[#B07D62]">{q.name}</div>
+            <div className="mt-1 italic font-body text-[#9C8878]">{q.occasion}</div>
           </motion.div>
         </AnimatePresence>
         <div className="flex justify-center gap-2 mt-10">
           {QUOTES.map((_, k) => (
-            <button key={k} onClick={() => setI(k)} className={`w-2 h-2 rounded-full transition-all ${k === i ? "bg-gold w-8" : "bg-bronze/50"}`} aria-label={`quote ${k + 1}`} />
+            <button key={k} onClick={() => setI(k)} className={`h-2 rounded-full transition-all ${k === i ? "bg-[#B07D62] w-8" : "bg-[#E0D4C8] w-2"}`} aria-label={`quote ${k + 1}`} />
           ))}
         </div>
       </div>

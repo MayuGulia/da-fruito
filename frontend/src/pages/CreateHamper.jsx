@@ -71,9 +71,9 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
   }, [onDone]);
 
   return (
-    <div className="relative w-full h-[420px] md:h-[520px] bg-obsidian overflow-hidden">
-      {/* vignette */}
-      <div className="absolute inset-0 bg-radial-gradient pointer-events-none" style={{ background: "radial-gradient(ellipse at center, transparent 40%, #0B0906 100%)" }} />
+    <div className="relative w-full h-[420px] md:h-[520px] bg-gradient-to-b from-[#F5EFE6] to-[#EEF2EC] rounded-2xl overflow-hidden border border-[#E0D4C8]">
+      {/* soft radial */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(232,207,196,0.4) 0%, transparent 65%)" }} />
       {/* frame 1 fade to black already (bg) */}
       {/* frame 2 — vessel */}
       <motion.div
@@ -81,14 +81,14 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
         transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       >
-        <div className="w-48 h-32 md:w-60 md:h-40 rounded-t-[140px] rounded-b-md bg-gradient-to-b from-[#d6cbb7] to-[#8c7a5a] border-2 border-gold/40 shadow-[0_20px_60px_rgba(201,168,76,0.2)]" />
+        <div className="w-48 h-32 md:w-60 md:h-40 rounded-t-[140px] rounded-b-md bg-gradient-to-b from-white to-[#E8CFC4] border border-[#B07D62]/50 shadow-[0_20px_50px_rgba(176,125,98,0.18)]" />
       </motion.div>
       {/* frame 3 — confections fly in */}
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-6 h-6 md:w-8 md:h-8 rounded-full"
-          style={{ background: `radial-gradient(circle at 30% 30%, ${i % 2 ? '#E8C97A' : '#5C2D3A'}, #2a1a12)` }}
+          style={{ background: `radial-gradient(circle at 30% 30%, ${i % 2 ? '#B07D62' : '#8FA98C'}, #5C4A3A)` }}
           initial={{ opacity: 0, x: (i - 3) * 120, y: -220, rotate: 0 }}
           animate={{
             opacity: f >= 2 ? 1 : 0,
@@ -105,16 +105,16 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
           initial={{ opacity: 0, y: -200, rotate: -10 }}
           animate={{ opacity: f >= 4 ? 1 : 0, y: f >= 4 ? 0 : -200, rotate: f >= 4 ? 0 : -10 }}
           transition={{ duration: 0.7, ease: [0.22,1,0.36,1] }}
-          className="absolute left-1/2 top-[60%] -translate-x-1/2 w-40 h-24 bg-ceramic border border-gold/50 shadow-xl flex items-center justify-center"
+          className="absolute left-1/2 top-[60%] -translate-x-1/2 w-40 h-24 bg-white border border-[#B07D62]/60 rounded-md shadow-[0_10px_30px_rgba(176,125,98,0.2)] flex items-center justify-center"
         >
-          <span className="font-script text-xl text-berry">with love</span>
+          <span className="font-script text-xl text-[#B07D62]">with love</span>
         </motion.div>
       )}
       {/* frame 7 — ribbon draws */}
       <motion.svg viewBox="0 0 400 400" className="absolute inset-0 w-full h-full pointer-events-none">
         <motion.path
           d="M 100 200 Q 200 140 300 200"
-          stroke="#C9A84C" strokeWidth="4" fill="none"
+          stroke="#B07D62" strokeWidth="4" fill="none"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: f >= 6 ? 1 : 0, opacity: f >= 6 ? 1 : 0 }}
           transition={{ duration: 0.9 }}
@@ -127,15 +127,15 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
         className="absolute left-1/2 top-[40%] -translate-x-1/2"
       >
         <svg width="80" height="50" viewBox="0 0 80 50">
-          <path d="M 20 25 Q 40 5 60 25 Q 50 45 40 35 Q 30 45 20 25 Z" fill="#E8C97A" stroke="#C9A84C" strokeWidth="1" />
+          <path d="M 20 25 Q 40 5 60 25 Q 50 45 40 35 Q 30 45 20 25 Z" fill="#E8CFC4" stroke="#B07D62" strokeWidth="1.2" />
         </svg>
       </motion.div>
-      {/* frame 9 — golden burst */}
+      {/* frame 9 — soft burst */}
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: f >= 8 ? [0, 0.8, 0] : 0, scale: f >= 8 ? 2.5 : 0.5 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
         className="absolute inset-0 pointer-events-none"
-        style={{ background: "radial-gradient(circle at center, rgba(232,201,122,0.45), transparent 60%)" }}
+        style={{ background: "radial-gradient(circle at center, rgba(232,207,196,0.55), transparent 60%)" }}
       />
     </div>
   );
@@ -250,28 +250,29 @@ export default function CreateHamper() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian pt-24 pb-24" data-testid="create-hamper">
+    <div className="min-h-screen bg-[#FDFAF6] pt-24 pb-24" data-testid="create-hamper">
       {/* Progress */}
       <div className="lux-container">
-        <div className="flex items-center justify-between mb-2 text-ivory/60 font-ui text-[0.7rem] tracking-[0.3em] uppercase">
-          <button onClick={() => nav("/")} className="flex items-center gap-2 hover:text-antique" data-testid="builder-exit"><ArrowLeft size={14} /> Exit Builder</button>
+        <div className="flex items-center justify-between mb-2 text-[#9C8878] font-ui text-[0.7rem] tracking-[0.3em] uppercase">
+          <button onClick={() => nav("/")} className="flex items-center gap-2 hover:text-[#B07D62]" data-testid="builder-exit"><ArrowLeft size={14} /> Exit Builder</button>
           <div>Step {currentStepIndex + 1} of {STEPS.length}</div>
         </div>
-        <div className="relative h-[2px] bg-bronze/30 my-6">
-          <motion.div className="absolute top-0 left-0 h-full bg-gold" animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }} transition={{ duration: 0.6 }} />
+        <div className="relative h-[2px] bg-[#E0D4C8] my-6">
+          <motion.div className="absolute top-0 left-0 h-full bg-[#B07D62]" animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }} transition={{ duration: 0.6 }} />
           <div className="absolute inset-0 flex justify-between -top-[10px]">
             {STEPS.map((s, i) => (
               <div key={s.id} className="flex flex-col items-center gap-2">
                 <motion.div
                   animate={{
-                    backgroundColor: i <= currentStepIndex ? "#C9A84C" : "#231F17",
-                    boxShadow: i === currentStepIndex ? "0 0 0 4px rgba(201,168,76,0.25)" : "0 0 0 0 rgba(201,168,76,0)",
+                    backgroundColor: i < currentStepIndex ? "#8FA98C" : (i === currentStepIndex ? "#B07D62" : "#FFFFFF"),
+                    borderColor: i <= currentStepIndex ? "#B07D62" : "#E0D4C8",
+                    boxShadow: i === currentStepIndex ? "0 0 0 4px rgba(176,125,98,0.2)" : "0 0 0 0 rgba(176,125,98,0)",
                   }}
-                  className="w-5 h-5 rounded-full border border-gold flex items-center justify-center"
+                  className="w-5 h-5 rounded-full border flex items-center justify-center"
                 >
-                  {i < currentStepIndex && <Check size={12} className="text-walnut" />}
+                  {i < currentStepIndex && <Check size={12} className="text-white" />}
                 </motion.div>
-                <span className={`hidden md:block font-ui text-[0.65rem] tracking-[0.25em] uppercase ${i === currentStepIndex ? "text-antique" : "text-bronze"}`}>{s.label}</span>
+                <span className={`hidden md:block font-ui text-[0.64rem] tracking-[0.25em] uppercase ${i === currentStepIndex ? "text-[#B07D62]" : "text-[#9C8878]"}`}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -540,7 +541,7 @@ export default function CreateHamper() {
               </div>
               <div className="card-lux p-6 h-fit sticky top-28">
                 <div className="text-[0.7rem] tracking-[0.3em] text-bronze uppercase font-ui mb-3">Order Summary</div>
-                {previewImage && <img src={previewImage} alt="preview" className="w-full h-52 object-contain bg-obsidian mb-4" />}
+                {previewImage && <img src={previewImage} alt="preview" className="w-full h-52 object-contain bg-[#F5EFE6] rounded-xl mb-4" />}
                 <div className="font-display text-2xl text-ivory mb-1">{vessel?.name}</div>
                 <div className="font-ui text-[0.65rem] uppercase tracking-[0.25em] text-bronze">{vessel?.material}</div>
                 <div className="hr-gold my-4" />

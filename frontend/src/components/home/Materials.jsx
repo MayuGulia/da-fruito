@@ -14,7 +14,7 @@ const MATERIALS = [
 export const Materials = () => {
   const scrollRef = useRef(null);
   return (
-    <section data-testid="materials-section" className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-b from-walnut to-obsidian">
+    <section data-testid="materials-section" className="relative py-24 md:py-32 overflow-hidden bg-[#EEF2EC]">
       {/* gold particles (no shimmer - slow float) */}
       {[...Array(18)].map((_, i) => (
         <span key={i} className="gold-particle animate-float-up"
@@ -23,8 +23,8 @@ export const Materials = () => {
       <div className="lux-container relative z-10">
         <Reveal>
           <div className="text-center mb-16">
-            <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Craft & Material</div>
-            <h2 className="font-display text-5xl md:text-7xl text-ivory">Crafted from the <em className="text-antique italic">Finest</em></h2>
+            <div className="text-[0.7rem] tracking-[0.4em] text-[#B07D62] uppercase font-ui mb-3">Craft & Material</div>
+            <h2 className="font-display text-5xl md:text-7xl text-[#2D2420]">Crafted from the <em className="text-[#B07D62] italic">Finest</em></h2>
           </div>
         </Reveal>
       </div>
@@ -44,16 +44,16 @@ export const Materials = () => {
           >
             <div className="relative h-72 overflow-hidden">
               <img src={m.image} alt={m.name} className="w-full h-full object-cover" draggable={false} />
-              <div className="absolute inset-0 bg-gradient-to-t from-obsidian to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent" />
             </div>
             <div className="p-6">
-              <div className="font-display text-2xl text-antique">{m.name}</div>
-              <p className="font-body italic text-ivory/60 mt-1">{m.descriptor}</p>
+              <div className="font-display text-2xl text-[#2D2420]">{m.name}</div>
+              <p className="font-body italic text-[#5C4A3A] mt-1">{m.descriptor}</p>
             </div>
           </motion.div>
         ))}
       </motion.div>
-      <div className="text-center mt-6 text-[0.7rem] tracking-[0.35em] text-bronze uppercase font-ui">Drag to Explore</div>
+      <div className="text-center mt-6 text-[0.7rem] tracking-[0.35em] text-[#9C8878] uppercase font-ui">Drag to Explore</div>
     </section>
   );
 };

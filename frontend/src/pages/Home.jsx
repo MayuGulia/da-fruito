@@ -10,7 +10,7 @@ import { Contact } from "../components/home/Contact";
 
 export default function Home() {
   return (
-    <div className="bg-walnut" data-testid="home-page">
+    <div className="bg-[#FDFAF6]" data-testid="home-page">
       <Hero />
       <ValueStrip />
       <Collections />

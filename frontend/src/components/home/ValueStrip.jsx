@@ -10,16 +10,16 @@ const PILLARS = [
 ];
 
 export const ValueStrip = () => (
-  <section id="value" data-testid="value-strip" className="bg-[#2A1F0F] py-14 md:py-20 border-y border-gold/15">
+  <section id="value" data-testid="value-strip" className="bg-[#F5EFE6] py-16 md:py-24 border-y border-[#E0D4C8]">
     <div className="lux-container grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
       {PILLARS.map((p, i) => (
         <Reveal key={p.label} delay={i * 0.08}>
           <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full border border-gold/50 mb-4 group-hover:bg-gold/10 transition-all duration-500 group-hover:scale-110">
-              <p.icon className="text-gold" size={22} />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white border border-[#E0D4C8] mb-5 group-hover:border-[#B07D62] group-hover:bg-[#E8CFC4]/40 transition-all duration-500 group-hover:scale-110 group-hover:shadow-[0_6px_20px_rgba(176,125,98,0.15)]">
+              <p.icon className="text-[#B07D62]" size={22} />
             </div>
-            <div className="font-display text-2xl text-antique mb-1">{p.label}</div>
-            <p className="text-ivory/60 text-sm font-body italic">{p.copy}</p>
+            <div className="font-display text-2xl text-[#2D2420] mb-1">{p.label}</div>
+            <p className="text-[#5C4A3A] text-sm font-body italic">{p.copy}</p>
           </div>
         </Reveal>
       ))}

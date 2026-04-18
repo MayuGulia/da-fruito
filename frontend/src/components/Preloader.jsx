@@ -17,7 +17,7 @@ export const Preloader = ({ onDone }) => {
     <motion.div
       data-testid="preloader"
       className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ background: "#1A1510" }}
+      style={{ background: "#FDFAF6" }}
       exit={{ opacity: 0, filter: "blur(8px)" }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
@@ -26,21 +26,21 @@ export const Preloader = ({ onDone }) => {
         <motion.svg width="280" height="160" viewBox="0 0 280 160" className="mb-6">
           <motion.path
             d="M 20 120 Q 140 20 260 120"
-            stroke="#C9A84C" strokeWidth="1.2" fill="none" strokeLinecap="round"
+            stroke="#B07D62" strokeWidth="1.4" fill="none" strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           />
           <motion.path
             d="M 120 90 Q 140 60 160 90 Q 150 110 140 100 Q 130 110 120 90 Z"
-            fill="#E8C97A" stroke="#C9A84C" strokeWidth="0.6"
+            fill="#E8CFC4" stroke="#B07D62" strokeWidth="0.8"
             initial={{ opacity: 0, scale: 0.6, y: 20 }}
             animate={{ opacity: phase >= 1 ? 1 : 0, scale: phase >= 1 ? 1 : 0.6, y: phase >= 1 ? 0 : 20 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{ transformOrigin: "140px 90px" }}
           />
           <motion.circle
-            cx="140" cy="100" r="3" fill="#E8C97A"
+            cx="140" cy="100" r="3" fill="#B07D62"
             animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.8, repeat: Infinity }}
           />
         </motion.svg>
@@ -49,8 +49,8 @@ export const Preloader = ({ onDone }) => {
           {letters.map((ch, i) => (
             <motion.span
               key={i}
-              className="font-display text-antique text-4xl md:text-6xl"
-              style={{ color: "#E8C97A" }}
+              className="font-display text-4xl md:text-6xl"
+              style={{ color: "#2D2420" }}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: phase >= 2 ? 1 : 0, y: phase >= 2 ? 0 : 12 }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
@@ -62,7 +62,7 @@ export const Preloader = ({ onDone }) => {
 
         <motion.p
           className="mt-6 text-xs tracking-[0.4em] uppercase font-ui"
-          style={{ color: "#C9A84C" }}
+          style={{ color: "#B07D62" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: phase >= 3 ? 1 : 0 }}
           transition={{ duration: 0.6 }}
