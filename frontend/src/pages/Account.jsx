@@ -25,7 +25,7 @@ export default function Account() {
     <div className="min-h-screen pt-28 pb-24" data-testid="account-page">
       <div className="lux-container">
         <div className="text-[0.7rem] uppercase tracking-[0.4em] text-bronze font-ui">My Account</div>
-        <h2 className="font-display text-5xl md:text-6xl text-ivory mt-2">Good to see you, <em className="italic text-antique">{user.name}</em></h2>
+        <h2 className="font-display text-5xl md:text-6xl text-ivory mt-2">Good to see you, <em className="italic text-[#C4A35A]">{user.name}</em></h2>
         <div className="hr-gold w-32 mt-6 mb-12" />
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -45,8 +45,8 @@ export default function Account() {
                   <div className="font-display text-xl text-ivory">Order #{o.id.slice(0, 8)}</div>
                   <div className="font-body italic text-ivory/60 text-sm">{new Date(o.created_at).toLocaleString()} · {o.items.length} item(s) · {o.payment_method}</div>
                 </div>
-                <div className="font-ui text-[0.7rem] tracking-[0.2em] uppercase text-antique">{o.status}</div>
-                <div className="font-display text-2xl text-antique">{formatINR(o.total)}</div>
+                <div className="font-ui text-[0.7rem] tracking-[0.2em] uppercase text-[#C4A35A]">{o.status}</div>
+                <div className="font-display text-2xl text-[#C4A35A]">{formatINR(o.total)}</div>
               </div>
             ))}
           </div>

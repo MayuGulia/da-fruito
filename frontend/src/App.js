@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import { PreloaderGate } from "./components/Preloader";
 import AIAssistant from "./components/AIAssistant";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
+import AnnouncementBar from "./components/AnnouncementBar";
 import Home from "./pages/Home";
 import CreateHamper from "./pages/CreateHamper";
 import Cart from "./pages/Cart";
@@ -46,6 +47,7 @@ function App() {
       <BrowserRouter>
         <PreloaderGate>
           <ScrollToTop />
+          <AnnouncementBar />
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />

@@ -71,7 +71,7 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
   }, [onDone]);
 
   return (
-    <div className="relative w-full h-[420px] md:h-[520px] bg-gradient-to-b from-[#F5EFE6] to-[#EEF2EC] rounded-2xl overflow-hidden border border-[#E0D4C8]">
+    <div className="relative w-full h-[420px] md:h-[520px] bg-gradient-to-b from-[#EEF5F4] to-[#EEF5F4] rounded-2xl overflow-hidden border border-[#C8DEDD]">
       {/* soft radial */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(232,207,196,0.4) 0%, transparent 65%)" }} />
       {/* frame 1 fade to black already (bg) */}
@@ -81,14 +81,14 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
         transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       >
-        <div className="w-48 h-32 md:w-60 md:h-40 rounded-t-[140px] rounded-b-md bg-gradient-to-b from-white to-[#E8CFC4] border border-[#B07D62]/50 shadow-[0_20px_50px_rgba(176,125,98,0.18)]" />
+        <div className="w-48 h-32 md:w-60 md:h-40 rounded-t-[140px] rounded-b-md bg-gradient-to-b from-white to-[#E6F4F3] border border-[#2A7E7C]/50 shadow-[0_20px_50px_rgba(176,125,98,0.18)]" />
       </motion.div>
       {/* frame 3 — confections fly in */}
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-6 h-6 md:w-8 md:h-8 rounded-full"
-          style={{ background: `radial-gradient(circle at 30% 30%, ${i % 2 ? '#B07D62' : '#8FA98C'}, #5C4A3A)` }}
+          style={{ background: `radial-gradient(circle at 30% 30%, ${i % 2 ? '#2A7E7C' : '#7A9E9C'}, #3D5C5A)` }}
           initial={{ opacity: 0, x: (i - 3) * 120, y: -220, rotate: 0 }}
           animate={{
             opacity: f >= 2 ? 1 : 0,
@@ -105,7 +105,7 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
           initial={{ opacity: 0, y: -200, rotate: -10 }}
           animate={{ opacity: f >= 4 ? 1 : 0, y: f >= 4 ? 0 : -200, rotate: f >= 4 ? 0 : -10 }}
           transition={{ duration: 0.7, ease: [0.22,1,0.36,1] }}
-          className="absolute left-1/2 top-[60%] -translate-x-1/2 w-40 h-24 bg-white border border-[#B07D62]/60 rounded-md shadow-[0_10px_30px_rgba(176,125,98,0.2)] flex items-center justify-center"
+          className="absolute left-1/2 top-[60%] -translate-x-1/2 w-40 h-24 bg-white border border-[#2A7E7C]/60 rounded-md shadow-[0_10px_30px_rgba(176,125,98,0.2)] flex items-center justify-center"
         >
           <span className="font-script text-xl text-[#B07D62]">with love</span>
         </motion.div>
@@ -114,7 +114,7 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
       <motion.svg viewBox="0 0 400 400" className="absolute inset-0 w-full h-full pointer-events-none">
         <motion.path
           d="M 100 200 Q 200 140 300 200"
-          stroke="#B07D62" strokeWidth="4" fill="none"
+          stroke="#2A7E7C" strokeWidth="4" fill="none"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: f >= 6 ? 1 : 0, opacity: f >= 6 ? 1 : 0 }}
           transition={{ duration: 0.9 }}
@@ -127,7 +127,7 @@ const AssemblyAnimation = ({ onDone, giftCardEnabled }) => {
         className="absolute left-1/2 top-[40%] -translate-x-1/2"
       >
         <svg width="80" height="50" viewBox="0 0 80 50">
-          <path d="M 20 25 Q 40 5 60 25 Q 50 45 40 35 Q 30 45 20 25 Z" fill="#E8CFC4" stroke="#B07D62" strokeWidth="1.2" />
+          <path d="M 20 25 Q 40 5 60 25 Q 50 45 40 35 Q 30 45 20 25 Z" fill="#E6F4F3" stroke="#2A7E7C" strokeWidth="1.2" />
         </svg>
       </motion.div>
       {/* frame 9 — soft burst */}
@@ -250,29 +250,29 @@ export default function CreateHamper() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFAF6] pt-24 pb-24" data-testid="create-hamper">
+    <div className="min-h-screen bg-[#FFFFFF] pt-24 pb-24" data-testid="create-hamper">
       {/* Progress */}
       <div className="lux-container">
-        <div className="flex items-center justify-between mb-2 text-[#9C8878] font-ui text-[0.7rem] tracking-[0.3em] uppercase">
-          <button onClick={() => nav("/")} className="flex items-center gap-2 hover:text-[#B07D62]" data-testid="builder-exit"><ArrowLeft size={14} /> Exit Builder</button>
+        <div className="flex items-center justify-between mb-2 text-[#7A9E9C] font-ui text-[0.7rem] tracking-[0.3em] uppercase">
+          <button onClick={() => nav("/")} className="flex items-center gap-2 hover:text-[#2A7E7C]" data-testid="builder-exit"><ArrowLeft size={14} /> Exit Builder</button>
           <div>Step {currentStepIndex + 1} of {STEPS.length}</div>
         </div>
-        <div className="relative h-[2px] bg-[#E0D4C8] my-6">
-          <motion.div className="absolute top-0 left-0 h-full bg-[#B07D62]" animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }} transition={{ duration: 0.6 }} />
+        <div className="relative h-[2px] bg-[#C8DEDD] my-6">
+          <motion.div className="absolute top-0 left-0 h-full bg-[#2A7E7C]" animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }} transition={{ duration: 0.6 }} />
           <div className="absolute inset-0 flex justify-between -top-[10px]">
             {STEPS.map((s, i) => (
               <div key={s.id} className="flex flex-col items-center gap-2">
                 <motion.div
                   animate={{
-                    backgroundColor: i < currentStepIndex ? "#8FA98C" : (i === currentStepIndex ? "#B07D62" : "#FFFFFF"),
-                    borderColor: i <= currentStepIndex ? "#B07D62" : "#E0D4C8",
+                    backgroundColor: i < currentStepIndex ? "#7A9E9C" : (i === currentStepIndex ? "#2A7E7C" : "#FFFFFF"),
+                    borderColor: i <= currentStepIndex ? "#2A7E7C" : "#C8DEDD",
                     boxShadow: i === currentStepIndex ? "0 0 0 4px rgba(176,125,98,0.2)" : "0 0 0 0 rgba(176,125,98,0)",
                   }}
                   className="w-5 h-5 rounded-full border flex items-center justify-center"
                 >
                   {i < currentStepIndex && <Check size={12} className="text-white" />}
                 </motion.div>
-                <span className={`hidden md:block font-ui text-[0.64rem] tracking-[0.25em] uppercase ${i === currentStepIndex ? "text-[#B07D62]" : "text-[#9C8878]"}`}>{s.label}</span>
+                <span className={`hidden md:block font-ui text-[0.64rem] tracking-[0.25em] uppercase ${i === currentStepIndex ? "text-[#2A7E7C]" : "text-[#7A9E9C]"}`}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -292,7 +292,7 @@ export default function CreateHamper() {
             <div data-testid="step-vessel">
               <div className="text-center mb-12">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step One</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">Begin with the <em className="italic text-antique">Extraordinary</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">Begin with the <em className="italic text-[#C4A35A]">Extraordinary</em></h2>
                 <p className="font-body italic text-ivory/70 mt-4 text-lg">Every masterpiece starts with its canvas.</p>
               </div>
               <div className="grid md:grid-cols-3 gap-8">
@@ -326,7 +326,7 @@ export default function CreateHamper() {
                           );
                         })}
                       </div>
-                      <div className="mt-4 font-display text-xl text-antique">{formatINR(v.price)}</div>
+                      <div className="mt-4 font-display text-xl text-[#C4A35A]">{formatINR(v.price)}</div>
                     </div>
                   </motion.button>
                 ))}
@@ -340,10 +340,10 @@ export default function CreateHamper() {
           {step === 1.5 && (
             <div data-testid="step-budget" className="max-w-3xl mx-auto text-center">
               <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Two</div>
-              <h2 className="font-display text-5xl md:text-6xl text-ivory">Set Your <em className="italic text-antique">Gifting Budget</em></h2>
+              <h2 className="font-display text-5xl md:text-6xl text-ivory">Set Your <em className="italic text-[#C4A35A]">Gifting Budget</em></h2>
               <p className="font-body italic text-ivory/70 mt-4 text-lg">We will curate only what fits beautifully within your range.</p>
               <div className="mt-14">
-                <div className="font-display text-6xl md:text-7xl text-antique">{formatINR(budget)}</div>
+                <div className="font-display text-6xl md:text-7xl text-[#C4A35A]">{formatINR(budget)}</div>
                 <input
                   type="range" min={1500} max={30000} step={500} value={budget} onChange={(e) => setBudget(parseInt(e.target.value))}
                   data-testid="budget-slider"
@@ -367,7 +367,7 @@ export default function CreateHamper() {
             <div data-testid="step-confections">
               <div className="text-center mb-10">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Three</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">Fill It with <em className="italic text-antique">Desire</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">Fill It with <em className="italic text-[#C4A35A]">Desire</em></h2>
                 <p className="font-body italic text-ivory/70 mt-4 text-lg">All confections are imported and curated exclusively for this collection.</p>
               </div>
               <div className="flex gap-3 overflow-x-auto scrollbar-none mb-8 justify-center">
@@ -399,9 +399,9 @@ export default function CreateHamper() {
                         )}
                       </div>
                       <div className="p-4">
-                        <div className="font-ui text-sm text-ivory group-hover:text-antique">{p.name}</div>
+                        <div className="font-ui text-sm text-ivory group-hover:text-[#C4A35A]">{p.name}</div>
                         <div className="font-body italic text-[0.72rem] text-bronze mt-1">{p.country}</div>
-                        <div className="font-display text-lg text-antique mt-2">{formatINR(p.price)}</div>
+                        <div className="font-display text-lg text-[#C4A35A] mt-2">{formatINR(p.price)}</div>
                       </div>
                     </motion.button>
                   );
@@ -412,9 +412,9 @@ export default function CreateHamper() {
               <div className="fixed bottom-0 left-0 right-0 z-40 glass-dark border-t border-gold/30">
                 <div className="lux-container flex flex-wrap items-center justify-between gap-4 py-4">
                   <div className="flex gap-6 font-ui text-[0.7rem] tracking-[0.2em] uppercase text-ivory/70">
-                    <div><span className="text-antique text-base block">{selectedItems.length}</span>Items</div>
-                    <div><span className="text-antique text-base block">{formatINR(total)}</span>Total</div>
-                    <div><span className="text-antique text-base block">{weight}g</span>Weight</div>
+                    <div><span className="text-[#C4A35A] text-base block">{selectedItems.length}</span>Items</div>
+                    <div><span className="text-[#C4A35A] text-base block">{formatINR(total)}</span>Total</div>
+                    <div><span className="text-[#C4A35A] text-base block">{weight}g</span>Weight</div>
                   </div>
                   <div className="flex gap-3">
                     <button onClick={back} className="btn-outline-gold"><ArrowLeft size={14} /> Back</button>
@@ -429,7 +429,7 @@ export default function CreateHamper() {
             <div data-testid="step-gift-card" className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Four</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">Shall We Add a <em className="italic text-antique">Word?</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">Shall We Add a <em className="italic text-[#C4A35A]">Word?</em></h2>
                 <p className="font-body italic text-ivory/70 mt-4 text-lg">A handwritten card, included with your hamper — complimentary.</p>
               </div>
               <div className="flex gap-3 justify-center mb-10">
@@ -450,7 +450,7 @@ export default function CreateHamper() {
                         <div className="text-[0.7rem] uppercase tracking-[0.3em] text-bronze font-ui mb-3">Suggested Messages</div>
                         <div className="space-y-3">
                           {(OCCASION_TILES.find((o) => o.id === giftCard.occasion)?.templates || []).map((t, i) => (
-                            <button key={i} onClick={() => setGiftCard({ message: t })} className="w-full text-left card-lux !p-4 text-ivory/80 font-body italic hover:text-antique">{t}</button>
+                            <button key={i} onClick={() => setGiftCard({ message: t })} className="w-full text-left card-lux !p-4 text-ivory/80 font-body italic hover:text-[#C4A35A]">{t}</button>
                           ))}
                         </div>
                       </>
@@ -488,7 +488,7 @@ export default function CreateHamper() {
             <div data-testid="step-preview" className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Five</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">A Glimpse of Your <em className="italic text-antique">Masterpiece</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">A Glimpse of Your <em className="italic text-[#C4A35A]">Masterpiece</em></h2>
               </div>
               <AssemblyAnimation onDone={() => {}} giftCardEnabled={!!giftCard.enabled} />
               <div className="mt-10 text-center">
@@ -520,7 +520,7 @@ export default function CreateHamper() {
               <div>
                 <div className="mb-8">
                   <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Final Step</div>
-                  <h2 className="font-display text-5xl text-ivory">Almost <em className="italic text-antique">There</em></h2>
+                  <h2 className="font-display text-5xl text-ivory">Almost <em className="italic text-[#C4A35A]">There</em></h2>
                   <p className="font-body italic text-ivory/70 mt-3">Your hamper is ready to be composed. Let us know where to send it.</p>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
@@ -541,19 +541,19 @@ export default function CreateHamper() {
               </div>
               <div className="card-lux p-6 h-fit sticky top-28">
                 <div className="text-[0.7rem] tracking-[0.3em] text-bronze uppercase font-ui mb-3">Order Summary</div>
-                {previewImage && <img src={previewImage} alt="preview" className="w-full h-52 object-contain bg-[#F5EFE6] rounded-xl mb-4" />}
+                {previewImage && <img src={previewImage} alt="preview" className="w-full h-52 object-contain bg-[#EEF5F4] rounded-xl mb-4" />}
                 <div className="font-display text-2xl text-ivory mb-1">{vessel?.name}</div>
                 <div className="font-ui text-[0.65rem] uppercase tracking-[0.25em] text-bronze">{vessel?.material}</div>
                 <div className="hr-gold my-4" />
                 <div className="space-y-2 font-body text-ivory/80 max-h-60 overflow-y-auto pr-2">
                   {selectedItems.map((i) => (
-                    <div key={i.id} className="flex justify-between text-sm"><span>— {i.name}</span><span className="text-antique">{formatINR(i.price)}</span></div>
+                    <div key={i.id} className="flex justify-between text-sm"><span>— {i.name}</span><span className="text-[#C4A35A]">{formatINR(i.price)}</span></div>
                   ))}
                 </div>
                 <div className="hr-gold my-4" />
                 {giftCard.enabled && <div className="font-body italic text-ivory/70 text-sm mb-3">Includes handwritten card.</div>}
                 <div className="flex justify-between font-ui uppercase tracking-[0.2em] text-ivory text-xs"><span>Budget</span><span>{formatINR(budget)}</span></div>
-                <div className="flex justify-between font-display text-antique text-2xl mt-2"><span>Total</span><span>{formatINR(total)}</span></div>
+                <div className="flex justify-between font-display text-[#C4A35A] text-2xl mt-2"><span>Total</span><span>{formatINR(total)}</span></div>
               </div>
             </div>
           )}

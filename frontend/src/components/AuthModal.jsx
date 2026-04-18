@@ -94,21 +94,21 @@ export const AuthModal = ({ open, onClose }) => {
               </button>
               {mode === "login" && (
                 <div className="text-right">
-                  <button type="button" onClick={onForgot} className="text-xs text-[#9C8878] hover:text-[#B07D62] font-ui tracking-[0.15em] uppercase" data-testid="auth-forgot">Forgot password?</button>
+                  <button type="button" onClick={onForgot} className="text-xs text-[#7A9E9C] hover:text-[#2A7E7C] font-ui tracking-[0.15em] uppercase" data-testid="auth-forgot">Forgot password?</button>
                 </div>
               )}
             </form>
             <div className="flex items-center gap-3 my-6">
-              <div className="flex-1 h-px bg-[#E0D4C8]" />
-              <span className="text-xs text-[#9C8878] font-ui tracking-[0.25em] uppercase">or</span>
-              <div className="flex-1 h-px bg-[#E0D4C8]" />
+              <div className="flex-1 h-px bg-[#C8DEDD]" />
+              <span className="text-xs text-[#7A9E9C] font-ui tracking-[0.25em] uppercase">or</span>
+              <div className="flex-1 h-px bg-[#C8DEDD]" />
             </div>
             <button
               type="button"
               onClick={onGoogle}
               disabled={googleBusy}
               data-testid="auth-google"
-              className="w-full flex items-center justify-center gap-3 bg-white border border-[#E0D4C8] hover:border-[#B07D62] text-[#2D2420] font-ui uppercase tracking-[0.15em] text-xs py-3 rounded-full transition-all duration-500"
+              className="w-full flex items-center justify-center gap-3 bg-white border border-[#C8DEDD] hover:border-[#2A7E7C] text-[#1A2E2E] font-ui uppercase tracking-[0.15em] text-xs py-3 rounded-full transition-all duration-500"
             >
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

@@ -83,7 +83,7 @@ export default function Checkout() {
             <div className="grid md:grid-cols-3 gap-3">
               {["razorpay", "cod", "whatsapp"].map((m) => (
                 <button type="button" key={m} onClick={() => setMethod(m)} className={`card-lux !p-4 text-left ${method === m ? "ring-2 ring-gold" : ""}`} data-testid={`pay-${m}`}>
-                  <div className="font-ui uppercase tracking-[0.2em] text-[0.72rem] text-antique">{m === "razorpay" ? "Razorpay" : m === "cod" ? "Cash on Delivery" : "WhatsApp Order"}</div>
+                  <div className="font-ui uppercase tracking-[0.2em] text-[0.72rem] text-[#C4A35A]">{m === "razorpay" ? "Razorpay" : m === "cod" ? "Cash on Delivery" : "WhatsApp Order"}</div>
                   <div className="font-body italic text-ivory/60 text-sm mt-1">{m === "razorpay" ? "UPI, cards, netbanking" : m === "cod" ? "Pay on receipt" : "Message our team"}</div>
                 </button>
               ))}
@@ -92,10 +92,10 @@ export default function Checkout() {
           <div className="card-lux p-6 h-fit sticky top-28">
             <div className="text-[0.7rem] uppercase tracking-[0.3em] font-ui text-bronze mb-3">Order Summary</div>
             {items.map((i) => (
-              <div key={i.id} className="flex justify-between py-2 font-body text-ivory/80 text-sm"><span>{i.name}</span><span className="text-antique">{formatINR(i.price * (i.quantity || 1))}</span></div>
+              <div key={i.id} className="flex justify-between py-2 font-body text-ivory/80 text-sm"><span>{i.name}</span><span className="text-[#C4A35A]">{formatINR(i.price * (i.quantity || 1))}</span></div>
             ))}
             <div className="hr-gold my-4" />
-            <div className="flex justify-between font-display text-2xl text-antique"><span>Total</span><span>{formatINR(total())}</span></div>
+            <div className="flex justify-between font-display text-2xl text-[#C4A35A]"><span>Total</span><span>{formatINR(total())}</span></div>
             <button type="submit" disabled={submitting} className="btn-gold w-full mt-6" data-testid="co-submit">
               {submitting ? "Processing..." : "Place Order"}
             </button>

@@ -125,7 +125,7 @@ export default function Admin() {
                     <td className="p-4 font-ui">#{o.id.slice(0, 8)}</td>
                     <td className="p-4"><div>{o.recipient_name}</div><div className="text-ivory/50 text-xs">{o.contact}</div></td>
                     <td className="p-4 capitalize">{o.payment_method}</td>
-                    <td className="p-4 font-display text-antique">{formatINR(o.total)}</td>
+                    <td className="p-4 font-display text-[#C4A35A]">{formatINR(o.total)}</td>
                     <td className="p-4">
                       <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)} className="lux-input !py-1.5 !px-2 text-xs" data-testid={`status-${o.id}`}>
                         {["Pending", "Pending COD", "Confirmed", "In Preparation", "Dispatched", "Delivered"].map((s) => <option key={s}>{s}</option>)}
@@ -146,7 +146,7 @@ export default function Admin() {
               <div key={p.id} className={`card-lux !p-3 ${!p.in_stock ? "opacity-50" : ""}`}>
                 <img src={p.image} alt={p.name} className="w-full h-28 object-cover" />
                 <div className="mt-2 font-ui text-xs text-ivory">{p.name}</div>
-                <div className="font-display text-antique">{formatINR(p.price)}</div>
+                <div className="font-display text-[#C4A35A]">{formatINR(p.price)}</div>
                 <div className="text-[0.6rem] uppercase tracking-[0.2em] text-bronze">{p.in_stock ? "In stock" : "Out of stock"}</div>
               </div>
             ))}

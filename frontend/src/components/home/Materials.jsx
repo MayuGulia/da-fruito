@@ -14,7 +14,7 @@ const MATERIALS = [
 export const Materials = () => {
   const scrollRef = useRef(null);
   return (
-    <section data-testid="materials-section" className="relative py-24 md:py-32 overflow-hidden bg-[#EEF2EC]">
+    <section data-testid="materials-section" className="relative py-24 md:py-32 overflow-hidden bg-[#EEF5F4]">
       {/* gold particles (no shimmer - slow float) */}
       {[...Array(18)].map((_, i) => (
         <span key={i} className="gold-particle animate-float-up"
@@ -23,8 +23,8 @@ export const Materials = () => {
       <div className="lux-container relative z-10">
         <Reveal>
           <div className="text-center mb-16">
-            <div className="text-[0.7rem] tracking-[0.4em] text-[#B07D62] uppercase font-ui mb-3">Craft & Material</div>
-            <h2 className="font-display text-5xl md:text-7xl text-[#2D2420]">Crafted from the <em className="text-[#B07D62] italic">Finest</em></h2>
+            <div className="text-[0.7rem] tracking-[0.4em] text-[#2A7E7C] uppercase font-ui mb-3">Craft & Material</div>
+            <h2 className="font-display text-5xl md:text-7xl text-[#1A2E2E]">Crafted from the <em className="text-[#2A7E7C] italic">Finest</em></h2>
           </div>
         </Reveal>
       </div>
@@ -47,13 +47,13 @@ export const Materials = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent" />
             </div>
             <div className="p-6">
-              <div className="font-display text-2xl text-[#2D2420]">{m.name}</div>
-              <p className="font-body italic text-[#5C4A3A] mt-1">{m.descriptor}</p>
+              <div className="font-display text-2xl text-[#1A2E2E]">{m.name}</div>
+              <p className="font-body italic text-[#3D5C5A] mt-1">{m.descriptor}</p>
             </div>
           </motion.div>
         ))}
       </motion.div>
-      <div className="text-center mt-6 text-[0.7rem] tracking-[0.35em] text-[#9C8878] uppercase font-ui">Drag to Explore</div>
+      <div className="text-center mt-6 text-[0.7rem] tracking-[0.35em] text-[#7A9E9C] uppercase font-ui">Drag to Explore</div>
     </section>
   );
 };

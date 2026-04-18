@@ -6,33 +6,41 @@ module.exports = {
         extend: {
             fontFamily: {
                 display: ["'Cormorant Garamond'", "serif"],
+                editorial: ["'Italiana'", "'Cormorant Garamond'", "serif"],
                 body: ["'EB Garamond'", "serif"],
                 ui: ["'Josefin Sans'", "sans-serif"],
                 script: ["'Pinyon Script'", "cursive"],
             },
             colors: {
-                // Porcelain Luxury palette (remapped tokens for backwards compatibility)
-                walnut: "#2D2420",      // deep text (for text-walnut on light surfaces)
-                walnutSoft: "#F5EFE6",  // secondary cream
-                obsidian: "#2D2420",    // deep text / footer / modal scrim
-                gold: "#B07D62",        // primary terracotta (replaces all gold)
-                antique: "#B07D62",     // merged to terracotta
-                bronze: "#9C8878",      // muted label
-                ivory: "#2D2420",       // deep headings text (was light ivory, now dark)
-                sage: "#8FA98C",        // secondary sage accent
-                berry: "#B07D62",       // merged to terracotta
+                // Teal Atelier palette (remapped tokens for backwards compatibility)
+                walnut: "#1A2E2E",      // deep text (was used for text on light)
+                walnutSoft: "#EEF5F4",  // sage mist secondary
+                obsidian: "#1A2E2E",    // atelier dark / footer / modal scrim
+                gold: "#2A7E7C",        // PRIMARY TEAL (replaces all terracotta)
+                antique: "#2A7E7C",     // merged to teal
+                bronze: "#7A9E9C",      // muted teal label
+                ivory: "#1A2E2E",       // deep headings text on light
+                sage: "#7A9E9C",        // muted teal
+                berry: "#C4A35A",       // ANTIQUE GOLD — prices/accent labels
                 ceramic: "#FFFFFF",     // pure card white
-                // New tokens (explicit Porcelain palette)
-                terracotta: "#B07D62",
-                terracottaDark: "#8F6048",
-                cream: "#F5EFE6",
-                sageTint: "#EEF2EC",
-                blush: "#E8CFC4",
-                deepText: "#2D2420",
-                bodyText: "#5C4A3A",
-                mutedLabel: "#9C8878",
-                borderWarm: "#E0D4C8",
-                porcelain: "#FDFAF6",
+                // New Teal Atelier tokens (explicit)
+                teal: "#2A7E7C",
+                tealDeep: "#1E5C5A",
+                tealWash: "#E6F4F3",
+                tealBorder: "#C8DEDD",
+                sageMist: "#EEF5F4",
+                parchment: "#FAF8F4",
+                atelierDark: "#1A2E2E",
+                antiqueGold: "#C4A35A",
+                terracotta: "#B07D62",  // reserved for gift card accent ONLY
+                terracottaDark: "#1E5C5A",  // remapped to deep teal for hover states
+                cream: "#FAF8F4",
+                blush: "#E6F4F3",
+                deepText: "#1A2E2E",
+                bodyText: "#3D5C5A",
+                mutedLabel: "#7A9E9C",
+                borderWarm: "#C8DEDD",
+                porcelain: "#FFFFFF",
                 // shadcn tokens (kept for components)
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
