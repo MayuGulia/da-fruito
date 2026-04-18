@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 
 const OCC = [
   { slug: "anniversary",  label: "For Everlasting Bonds",  image: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&q=85" },
-  { slug: "birthday",     label: "The Celebration Edit",   image: "https://images.unsplash.com/photo-1549488344-cbb6c34de5d7?w=1200&q=85" },
+  { slug: "birthday",     label: "The Celebration Edit",   image: "https://images.unsplash.com/photo-1464347744102-11db6282f854?w=1200&q=85" },
   { slug: "festive",      label: "The Festive Heirloom",   image: "https://images.unsplash.com/photo-1482275548304-a58859dc31b7?w=1200&q=85" },
   { slug: "corporate",    label: "The Corporate Gesture",  image: "https://images.unsplash.com/photo-1512909006721-3d6018887383?w=1200&q=85" },
   { slug: "wellness",     label: "The Sage Tea Ritual",    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=1200&q=85" },
