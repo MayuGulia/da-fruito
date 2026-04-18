@@ -33,6 +33,10 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '+91XXXXXXXXXX')
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
 RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
+FIREBASE_PROJECT_ID = os.environ.get('FIREBASE_PROJECT_ID', '')
+# Admin emails: comma-separated; users signing in with these emails are
+# granted admin role on first sync. Empty list means "first user becomes admin".
+ADMIN_EMAILS = {e.strip().lower() for e in os.environ.get('ADMIN_EMAILS', '').split(',') if e.strip()}
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
@@ -246,6 +250,148 @@ async def login(body: LoginIn):
 @api_router.get("/auth/me")
 async def me(user=Depends(require_user)):
     return user
+
+
+# ===================== Firebase ID Token Verification (JWKS-based) =====================
+# We verify Firebase ID tokens using Google's public x509 certs — no service account
+# key file required. This is the same validation firebase-admin performs internally.
+import requests as _rq
+import time as _time
+from cryptography import x509 as _x509
+from cryptography.hazmat.backends import default_backend as _default_backend
+
+_FB_CERTS_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+_fb_certs_cache = {"exp": 0, "certs": {}}
+
+
+def _fetch_firebase_certs() -> Dict[str, Any]:
+    """Fetch & cache Google's Firebase ID token signing certs (x509 PEM by kid)."""
+    now = _time.time()
+    if _fb_certs_cache["exp"] > now and _fb_certs_cache["certs"]:
+        return _fb_certs_cache["certs"]
+    try:
+        r = _rq.get(_FB_CERTS_URL, timeout=8)
+        r.raise_for_status()
+        certs_pem = r.json()  # { kid: pem, ... }
+        parsed = {}
+        for kid, pem in certs_pem.items():
+            cert = _x509.load_pem_x509_certificate(pem.encode(), _default_backend())
+            parsed[kid] = cert.public_key()
+        # cache for 1 hour (certs rotate less frequently)
+        _fb_certs_cache["certs"] = parsed
+        _fb_certs_cache["exp"] = now + 3600
+        return parsed
+    except Exception as e:
+        logger.error(f"Firebase certs fetch error: {e}")
+        return _fb_certs_cache.get("certs") or {}
+
+
+def verify_firebase_id_token(id_token: str) -> Dict[str, Any]:
+    if not FIREBASE_PROJECT_ID:
+        raise HTTPException(status_code=500, detail="Firebase not configured on server")
+    try:
+        header = jwt.get_unverified_header(id_token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Malformed ID token")
+    kid = header.get("kid")
+    certs = _fetch_firebase_certs()
+    key = certs.get(kid)
+    if not key:
+        # try one fresh fetch in case of rotation
+        _fb_certs_cache["exp"] = 0
+        certs = _fetch_firebase_certs()
+        key = certs.get(kid)
+    if not key:
+        raise HTTPException(status_code=401, detail="Unknown signing key")
+    try:
+        payload = jwt.decode(
+            id_token,
+            key,
+            algorithms=["RS256"],
+            audience=FIREBASE_PROJECT_ID,
+            issuer=f"https://securetoken.google.com/{FIREBASE_PROJECT_ID}",
+            options={"require": ["exp", "iat", "aud", "iss", "sub"]},
+        )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="ID token expired")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid ID token: {e}")
+    if not payload.get("sub"):
+        raise HTTPException(status_code=401, detail="ID token missing subject")
+    return payload
+
+
+class FirebaseSyncIn(BaseModel):
+    id_token: str
+    name: Optional[str] = ""
+    email: Optional[str] = ""
+
+
+@api_router.post("/auth/firebase-sync")
+async def firebase_sync(body: FirebaseSyncIn):
+    """Exchange a Firebase ID token for a backend JWT.
+
+    Verifies the ID token against Google's public certs, then creates or fetches
+    a MongoDB user record keyed by email (firebase uid stored for reference).
+    First user (or email in ADMIN_EMAILS) gets the admin role.
+    """
+    claims = verify_firebase_id_token(body.id_token)
+    uid = claims.get("sub")
+    email = (claims.get("email") or body.email or "").lower()
+    name = claims.get("name") or body.name or (email.split("@")[0] if email else "Guest")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required on the Firebase account")
+
+    existing = await db.users.find_one({"$or": [{"firebase_uid": uid}, {"email": email}]})
+    if existing:
+        # Ensure firebase_uid is linked on legacy email-only users
+        updates = {}
+        if not existing.get("firebase_uid"):
+            updates["firebase_uid"] = uid
+        if name and existing.get("name") != name and not existing.get("name_locked"):
+            updates["name"] = name
+        if updates:
+            await db.users.update_one({"id": existing["id"]}, {"$set": updates})
+            existing.update(updates)
+        user_doc = existing
+    else:
+        count = await db.users.count_documents({})
+        is_admin_email = email in ADMIN_EMAILS if ADMIN_EMAILS else False
+        role = "admin" if (count == 0 or is_admin_email) else "customer"
+        user_doc = {
+            "id": str(uuid.uuid4()),
+            "email": email,
+            "name": name,
+            "firebase_uid": uid,
+            "password": "",  # Firebase handles credentials
+            "role": role,
+            "addresses": [],
+            "created_at": now_iso(),
+        }
+        await db.users.insert_one(user_doc)
+
+    token = make_token(user_doc["id"], user_doc["role"])
+    return {
+        "token": token,
+        "user": {
+            "id": user_doc["id"],
+            "email": user_doc["email"],
+            "name": user_doc["name"],
+            "role": user_doc["role"],
+        },
+    }
+
+
+@api_router.post("/auth/promote-admin")
+async def promote_admin(body: Dict[str, Any], admin=Depends(require_admin)):
+    """Admin-only: promote another user to admin by email."""
+    email = (body.get("email") or "").lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="email required")
+    r = await db.users.update_one({"email": email}, {"$set": {"role": "admin"}})
+    if r.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"ok": True}
 
 
 # ===================== Routes: Catalog =====================

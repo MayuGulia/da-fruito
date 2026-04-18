@@ -29,12 +29,17 @@ const ScrollToTop = () => {
 };
 
 function App() {
-  const fetchMe = useAuthStore((s) => s.fetchMe);
+  const initAuthListener = useAuthStore((s) => s.initAuthListener);
   const fetchCart = useCartStore((s) => s.fetch);
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
-    fetchMe().then((u) => { if (u) fetchCart(); });
-  }, [fetchMe, fetchCart]);
+    initAuthListener();
+  }, [initAuthListener]);
+
+  useEffect(() => {
+    if (user) fetchCart();
+  }, [user, fetchCart]);
 
   return (
     <div className="App">

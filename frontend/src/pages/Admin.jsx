@@ -45,8 +45,9 @@ export default function Admin() {
       const { data } = await api.post("/ai-inventory/apply", preview);
       toast.success(`Applied: ${data.changed} record(s) affected.`);
       setPreview(null); setCmd("");
-      const { data: p } = await api.get("/products");
-      setProducts(p);
+      const [pRes, sRes] = await Promise.all([api.get("/products"), api.get("/admin/stats")]);
+      setProducts(pRes.data);
+      setStats(sRes.data);
     } catch (e) { toast.error(e?.response?.data?.detail || "Apply failed"); } finally { setBusy(false); }
   };
 
