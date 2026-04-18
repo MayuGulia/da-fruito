@@ -36,7 +36,7 @@ export const Glimpses = () => (
           data-testid="glimpse-left"
         >
           <img
-            src="https://images.unsplash.com/photo-1549488344-cbb6c34de5d7?w=1200&q=85"
+            src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&q=85"
             alt="Ribbon tying in the Da Fruito atelier"
             className="w-full h-[480px] md:h-[560px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />

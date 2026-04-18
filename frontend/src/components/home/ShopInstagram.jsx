@@ -8,9 +8,9 @@ import { Instagram } from "lucide-react";
 const IG_HANDLE_URL = "https://www.instagram.com/da.fruito/";
 const TILES = [
   { src: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=900&q=85", cap: "Festive No.7"  },
-  { src: "https://images.unsplash.com/photo-1583394293214-28ded15ee548?w=900&q=85", cap: "Ribbon Study"  },
+  { src: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=900&q=85", cap: "Ribbon Study"  },
   { src: "https://images.unsplash.com/photo-1464347744102-11db6282f854?w=900&q=85", cap: "Celebration"    },
-  { src: "https://images.unsplash.com/photo-1549488344-cbb6c34de5d7?w=900&q=85", cap: "The Edit"       },
+  { src: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=900&q=85", cap: "The Edit"       },
   { src: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=900&q=85", cap: "Sage Ritual"    },
   { src: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=900&q=85", cap: "Atelier"        },
   { src: "https://images.unsplash.com/photo-1482275548304-a58859dc31b7?w=900&q=85", cap: "Heirloom"       },
