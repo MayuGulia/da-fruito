@@ -46,17 +46,17 @@ export const Navbar = () => {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${bg}`}
         initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.7, ease: [0.22,1,0.36,1] }}
       >
-        <div className="lux-container flex items-center justify-between py-4">
+        <div className="lux-container flex items-center justify-between py-6 md:py-7">
           <Link to="/" data-testid="nav-logo" className="flex items-center gap-3 group">
-            <svg width="34" height="22" viewBox="0 0 40 24" className="shrink-0">
+            <svg width="48" height="30" viewBox="0 0 40 24" className="shrink-0">
               <path d="M 4 18 Q 20 2 36 18" stroke="#2A7E7C" strokeWidth="1.4" fill="none" strokeLinecap="round" />
               <path d="M 15 13 Q 20 8 25 13 Q 22 17 20 15 Q 18 17 15 13 Z" fill="#E6F4F3" stroke="#2A7E7C" strokeWidth="0.6" />
             </svg>
-            <span className="font-display text-2xl md:text-3xl tracking-wide text-[#1A2E2E] group-hover:text-[#2A7E7C] transition-colors duration-500">Da Fruito</span>
+            <span className="font-display text-3xl md:text-[34px] tracking-wide text-[#1A2E2E] group-hover:text-[#2A7E7C] transition-colors duration-500">Da Fruito</span>
           </Link>
 
           {/* Center nav desktop */}
-          <nav className="hidden lg:flex items-center gap-10 font-ui text-[0.8rem] uppercase tracking-[0.2em]">
+          <nav className="hidden lg:flex items-center gap-12 font-ui text-[0.82rem] uppercase tracking-[0.22em]">
             <button
               data-testid="nav-collections"
               onClick={() => setMega((v) => !v)}
@@ -70,7 +70,7 @@ export const Navbar = () => {
           </nav>
 
           <div className="flex items-center gap-3 md:gap-5">
-            <Link to="/create-hamper" data-testid="nav-create-cta" className="hidden md:inline-flex btn-gold !py-2.5 !px-5 !text-[0.7rem]">Create Your Gift Hamper</Link>
+            <Link to="/create-hamper" data-testid="nav-create-cta" className="hidden md:inline-flex btn-gold !py-3 !px-6 !text-[0.72rem]">Create Your Gift Hamper</Link>
             <button data-testid="nav-search" className="hidden md:inline-flex text-[#3D5C5A] hover:text-[#2A7E7C] transition-colors"><Search size={18} /></button>
             <Link to="/cart" data-testid="nav-cart" className="relative text-[#3D5C5A] hover:text-[#2A7E7C] transition-colors">
               <ShoppingBag size={20} />
@@ -130,7 +130,7 @@ export const Navbar = () => {
                   </Link>
                 </div>
                 <div className="relative overflow-hidden rounded-2xl">
-                  <img alt="" src="https://images.unsplash.com/photo-1732928730431-11c206639a38?w=800&q=80" className="w-full h-40 object-cover" />
+                  <img alt="" src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=800&q=80" className="w-full h-40 object-cover" />
                   <div className="mt-4 text-[#3D5C5A]/80 italic font-body">"Every hamper we create is a conversation between art and generosity."</div>
                 </div>
               </div>

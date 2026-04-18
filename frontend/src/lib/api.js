@@ -13,7 +13,7 @@ api.interceptors.request.use((cfg) => {
 
 export const formatINR = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
-export const WHATSAPP_NUMBER_DEFAULT = "+91XXXXXXXXXX";
+export const WHATSAPP_NUMBER_DEFAULT = "+919034782090";
 
 export const buildWhatsAppLink = (number, message) => {
   const clean = String(number || WHATSAPP_NUMBER_DEFAULT).replace(/[^+\d]/g, "");

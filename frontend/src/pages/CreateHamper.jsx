@@ -19,12 +19,11 @@ const STEPS = [
 
 const CATEGORIES = [
   { id: "chocolates", label: "Chocolates & Truffles" },
-  { id: "biscuits", label: "Biscuits & Shortbreads" },
-  { id: "teas", label: "Teas & Infusions" },
-  { id: "preserves", label: "Preserves & Spreads" },
-  { id: "nuts", label: "Nuts & Dried Fruits" },
-  { id: "wines", label: "Wines & Sparkling" },
-  { id: "specialty", label: "Specialty Items" },
+  { id: "biscuits",   label: "Biscuits & Cookies" },
+  { id: "nuts",       label: "Nuts & Dried Fruits" },
+  { id: "teas",       label: "Teas & Coffee" },
+  { id: "snacks",     label: "Gourmet Snacks" },
+  { id: "artisan",    label: "Artisan Keepsakes" },
 ];
 
 const OCCASION_TILES = [

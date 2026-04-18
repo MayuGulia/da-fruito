@@ -11,7 +11,7 @@ export const Hero = () => {
     <section data-testid="hero-section" className="relative h-[100vh] overflow-hidden">
       {/* Refined editorial cover — muted, cinematic, luxury gifting still-life */}
       <motion.img
-        src="https://images.unsplash.com/photo-1732928730431-11c206639a38?w=2400&q=90"
+        src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=2400&q=90"
         alt="Da Fruito luxury hamper"
         className="absolute inset-0 w-full h-full object-cover"
         style={{ y, scale: 1.1 }}

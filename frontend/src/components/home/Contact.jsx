@@ -22,9 +22,9 @@ export const Contact = () => {
             <MessageCircle size={20} /> Message on WhatsApp
           </a>
           <div className="mt-12 flex flex-col md:flex-row gap-8 justify-center items-center text-[#3D5C5A]">
-            <div className="flex items-center gap-2"><Phone size={16} className="text-[#2A7E7C]" /> <span className="font-body">+91 98XXX XXXXX</span></div>
+            <div className="flex items-center gap-2"><Phone size={16} className="text-[#2A7E7C]" /> <span className="font-body">+91 90347 82090</span></div>
             <div className="flex items-center gap-2"><Mail size={16} className="text-[#2A7E7C]" /> <span className="font-body">hello@dafruito.in</span></div>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-[#2A7E7C]"><Instagram size={16} className="text-[#2A7E7C]" /> <span className="font-body">@dafruito</span></a>
+            <a href="https://www.instagram.com/da.fruito/" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-[#2A7E7C]"><Instagram size={16} className="text-[#2A7E7C]" /> <span className="font-body">@da.fruito</span></a>
           </div>
         </Reveal>
       </div>
