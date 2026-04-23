@@ -15,7 +15,7 @@ export const ArtisanStory = () => (
       <Reveal>
         <div className="relative overflow-hidden rounded-sm">
           <img
-            src="https://images.unsplash.com/photo-1607863680198-23d4b2565df0?w=1400&q=85"
+            src="https://i.postimg.cc/tJG18QJW/Screenshot-2026-04-22-191911.png"
             alt="Da Fruito atelier — hands arranging a hamper"
             className="w-full h-[520px] md:h-[620px] object-cover"
           />

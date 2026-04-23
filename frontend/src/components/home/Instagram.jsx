@@ -4,7 +4,7 @@ import { Instagram } from "lucide-react";
 
 const IMGS = [
   "https://images.unsplash.com/photo-1608142737432-b0a0bed6fdee?w=900&q=80",
-  "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=900&q=80",
+  "https://i.postimg.cc/ZYW86myR/Gemini-Generated-Image-xzwx2lxzwx2lxzwx.png",
   "https://images.unsplash.com/photo-1576920060091-40207b3c3d74?w=900&q=80",
   "https://images.unsplash.com/photo-1732928729959-2e8fdb5a5cd7?w=900&q=80",
   "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=900&q=80",

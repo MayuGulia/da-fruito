@@ -8,12 +8,12 @@ import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 
 const OCC = [
-  { slug: "anniversary",  label: "For Everlasting Bonds",  image: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&q=85" },
-  { slug: "birthday",     label: "The Celebration Edit",   image: "https://images.unsplash.com/photo-1464347744102-11db6282f854?w=1200&q=85" },
-  { slug: "festive",      label: "The Festive Heirloom",   image: "https://images.unsplash.com/photo-1482275548304-a58859dc31b7?w=1200&q=85" },
-  { slug: "corporate",    label: "The Corporate Gesture",  image: "https://images.unsplash.com/photo-1512909006721-3d6018887383?w=1200&q=85" },
-  { slug: "wellness",     label: "The Sage Tea Ritual",    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=1200&q=85" },
-  { slug: "housewarming", label: "Housewarming Welcome",   image: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=1200&q=85" },
+  { slug: "anniversary",  label: "For Everlasting Bonds",  image: "https://i.postimg.cc/3w3jGD2V/Gemini-Generated-Image-8ifihj8ifihj8ifi.png" },
+  { slug: "birthday",     label: "The Celebration Edit",   image: "https://i.postimg.cc/1tx6tLm7/Gemini-Generated-Image-o54ifbo54ifbo54i.png" },
+  { slug: "festive",      label: "The Festive Heirloom",   image: "https://i.postimg.cc/dt9z9YgT/Gemini-Generated-Image-gkg4t8gkg4t8gkg4.png" },
+  { slug: "corporate",    label: "The Corporate Gesture",  image: "https://i.postimg.cc/mgLJh5px/Gemini-Generated-Image-gxvfk1gxvfk1gxvf.png" },
+  { slug: "wellness",     label: "The Sage Tea Ritual",    image: "https://i.postimg.cc/L5z44bCz/Gemini-Generated-Image-biua7xbiua7xbiua.png" },
+  { slug: "housewarming", label: "Housewarming Welcome",   image: "https://i.postimg.cc/NfmbYkgg/Gemini-Generated-Image-xq072exq072exq07.png" },
 ];
 
 export const Collections = () => {

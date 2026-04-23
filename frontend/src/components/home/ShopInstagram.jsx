@@ -7,14 +7,14 @@ import { Instagram } from "lucide-react";
 // Each tile has a teal-wash hover + Instagram icon overlay, linking to @da.fruito.
 const IG_HANDLE_URL = "https://www.instagram.com/da.fruito/";
 const TILES = [
-  { src: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=900&q=85", cap: "Festive No.7"  },
-  { src: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=900&q=85", cap: "Ribbon Study"  },
-  { src: "https://images.unsplash.com/photo-1464347744102-11db6282f854?w=900&q=85", cap: "Celebration"    },
-  { src: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=900&q=85", cap: "The Edit"       },
-  { src: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=900&q=85", cap: "Sage Ritual"    },
-  { src: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=900&q=85", cap: "Atelier"        },
-  { src: "https://images.unsplash.com/photo-1482275548304-a58859dc31b7?w=900&q=85", cap: "Heirloom"       },
-  { src: "https://images.unsplash.com/photo-1512909006721-3d6018887383?w=900&q=85", cap: "Corporate"      },
+  { src: "https://i.postimg.cc/8P83XyHD/Gemini-Generated-Image-4ehcqp4ehcqp4ehc.png", cap: "Festive No.7"  },
+  { src: "https://i.postimg.cc/bYFYGjpH/Gemini-Generated-Image-h9otuvh9otuvh9ot.png", cap: "Ribbon Study"  },
+  { src: "https://i.postimg.cc/9XvdGKBC/Gemini-Generated-Image-o54ifbo54ifbo54i.png", cap: "Celebration"    },
+  { src: "https://i.postimg.cc/W4hccdJv/Gemini-Generated-Image-xq072exq072exq07.png", cap: "The Edit"       },
+  { src: "https://i.postimg.cc/L5z44bCz/Gemini-Generated-Image-biua7xbiua7xbiua.png", cap: "Sage Ritual"    },
+  { src: "https://i.postimg.cc/dt9z9YgT/Gemini-Generated-Image-gkg4t8gkg4t8gkg4.png", cap: "Atelier"        },
+  { src: "https://i.postimg.cc/NfmbYkgg/Gemini-Generated-Image-xq072exq072exq07.png", cap: "Heirloom"       },
+  { src: "https://i.postimg.cc/mgLJh5px/Gemini-Generated-Image-gxvfk1gxvfk1gxvf.png", cap: "Corporate"      },
 ];
 
 export const ShopInstagram = () => (
@@ -30,7 +30,7 @@ export const ShopInstagram = () => (
             <p className="font-body italic text-[#3D5C5A] mt-3">Tap any frame to shop the story on Instagram.</p>
           </div>
           <a
-            href={IG_HANDLE_URL}
+            href={<div>https://www.instagram.com/da.fruito/</div>}
             target="_blank"
             rel="noreferrer"
             data-testid="ig-follow-cta"
@@ -56,7 +56,7 @@ export const ShopInstagram = () => (
             data-testid={`ig-tile-${i}`}
           >
             <img
-              src={t.src}
+              src = {t.src}
               alt={t.cap}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               loading="lazy"

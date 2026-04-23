@@ -6,7 +6,7 @@ export const About = () => (
     <div className="lux-container grid md:grid-cols-[45%_55%] gap-12 md:gap-20 items-center">
       <Reveal>
         <div className="relative overflow-hidden rounded-2xl">
-          <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1400&q=85" alt="atelier" className="w-full h-[520px] object-cover" />
+          <img src="https://i.postimg.cc/zGV2Qz5j/Gemini-Generated-Image-9yenbe9yenbe9yen.png" alt="atelier" className="w-full h-[520px] object-cover" />
           <div className="absolute inset-0 ring-1 ring-[#C8DEDD] rounded-2xl pointer-events-none" />
         </div>
       </Reveal>

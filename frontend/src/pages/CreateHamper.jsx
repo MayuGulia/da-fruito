@@ -18,12 +18,11 @@ const STEPS = [
 ];
 
 const CATEGORIES = [
-  { id: "chocolates", label: "Chocolates & Truffles" },
-  { id: "biscuits",   label: "Biscuits & Cookies" },
-  { id: "nuts",       label: "Nuts & Dried Fruits" },
-  { id: "teas",       label: "Teas & Coffee" },
-  { id: "snacks",     label: "Gourmet Snacks" },
-  { id: "artisan",    label: "Artisan Keepsakes" },
+  { id: "chocolates_cookies", label: "Chocolates & Cookies" },
+  { id: "dry_fruits",         label: "Dry Fruits" },
+  { id: "gourmet_barista",    label: "Gourmet Barista" },
+  { id: "snacks",             label: "Snacks & Munchies" },
+  { id: "festive",            label: "Festive & Cultural" },
 ];
 
 const OCCASION_TILES = [
@@ -108,7 +107,7 @@ export default function CreateHamper() {
   const { step, setStep, vessel, setVessel, budget, setBudget, selectedItems, toggleItem, giftCard, setGiftCard, previewImage, setPreviewImage, runningTotal, totalWeight, reset } = useBuilderStore();
   const [vessels, setVessels] = useState([]);
   const [products, setProducts] = useState([]);
-  const [cat, setCat] = useState("chocolates");
+  const [cat, setCat] = useState("chocolates_cookies");
   const [loadingImg, setLoadingImg] = useState(false);
   const [whatsappNum, setWhatsappNum] = useState(WHATSAPP_NUMBER_DEFAULT);
   const addToCart = useCartStore((s) => s.add);

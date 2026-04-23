@@ -1,20 +1,69 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Reveal } from "../Reveal";
-import { api, formatINR } from "../../lib/api";
+import { formatINR } from "../../lib/api";
 import { useCartStore } from "../../store/cartStore";
 import { toast } from "sonner";
 
+// ─── Hardcoded hamper data with manual image URLs ───────────────────────────
+const HAMPERS = [
+  {
+    id: 1,
+    name: "The Everlasting Bonds",
+    description: "A ceremony in a ceramic vessel. Single-origin chocolates, handpicked teas, and a personalised keepsake.",
+    price: 4500,
+    occasion: "Anniversary",
+    image: "https://i.postimg.cc/NGxKRyfh/Gemini-Generated-Image-idxbyoidxbyoidxb.png",
+  },
+  {
+    id: 2,
+    name: "The Celebration Edit",
+    description: "Playful and indulgent — truffles, shortbread, and sparkling joy in every layer.",
+    price: 3200,
+    occasion: "Birthday",
+    image: "https://i.postimg.cc/0NdshwBX/Gemini-Generated-Image-83dgwn83dgwn83dg-(1).png",
+  },
+  {
+    id: 3,
+    name: "The Festive Heirloom",
+    description: "A Diwali and winter-festive hamper — saffron, preserves, and handcrafted sweets.",
+    price: 5800,
+    occasion: "Festive",
+    image: "https://i.postimg.cc/dt9z9YgT/Gemini-Generated-Image-gkg4t8gkg4t8gkg4.png",
+  },
+  {
+    id: 4,
+    name: "The Corporate Gesture",
+    description: "Refined, restrained, memorable — for boardrooms and beyond.",
+    price: 4200,
+    occasion: "Corporate",
+    image: "https://i.postimg.cc/mgLJh5px/Gemini-Generated-Image-gxvfk1gxvfk1gxvf.png",
+  },
+  {
+    id: 5,
+    name: "The Sage Tea Ritual",
+    description: "A slow morning — loose-leaf tea, acacia honey, and handmade ceramics.",
+    price: 2800,
+    occasion: "Wellness",
+    image: "https://i.postimg.cc/L5z44bCz/Gemini-Generated-Image-biua7xbiua7xbiua.png",
+  },
+  {
+    id: 6,
+    name: "The Housewarming Welcome",
+    description: "A new home deserves a warm beginning — preserves, candles, and curated kitchen luxuries.",
+    price: 3400,
+    occasion: "Housewarming",
+    image: "https://i.postimg.cc/NfmbYkgg/Gemini-Generated-Image-xq072exq072exq07.png",
+  },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Horizontal-scroll Featured Hampers row — Code-Silver "bestsellers" style
 export const FeaturedHampers = () => {
-  const [items, setItems] = useState([]);
+  const [items] = useState(HAMPERS);
   const addToCart = useCartStore((s) => s.add);
   const scroller = useRef(null);
-
-  useEffect(() => {
-    api.get("/hampers").then(({ data }) => setItems(data.slice(0, 6))).catch(() => {});
-  }, []);
 
   const scroll = (dir) => {
     const el = scroller.current;

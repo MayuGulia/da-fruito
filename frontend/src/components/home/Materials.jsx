@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 import { Reveal } from "../Reveal";
 
 const MATERIALS = [
-  { name: "Hand-Turned Ceramic", descriptor: "Ivory-glazed, gold-rimmed.", image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200&q=80" },
-  { name: "Reclaimed Walnut", descriptor: "Beeswax finish, heirloom grain.", image: "https://images.unsplash.com/photo-1544776193-52d4c5b3f540?w=1200&q=80" },
-  { name: "German Silver", descriptor: "Hand-hammered, warm patina.", image: "https://images.unsplash.com/photo-1586880244406-556ebe35f282?w=1200&q=80" },
-  { name: "Hand-Woven Jute", descriptor: "Natural, textural, earthen.", image: "https://images.unsplash.com/photo-1609078147794-42d4e43d2c70?w=1200&q=80" },
-  { name: "Makrana Marble", descriptor: "Cool, veined, substantial.", image: "https://images.unsplash.com/photo-1594736797933-d0801ba2fe65?w=1200&q=80" },
-  { name: "Mango Wood", descriptor: "Sun-bleached, oil-finished.", image: "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=1200&q=80" },
+  { name: "Hand-Turned Ceramic", descriptor: "Ivory-glazed, gold-rimmed.", image: "https://i.postimg.cc/ZYW86myR/Gemini-Generated-Image-xzwx2lxzwx2lxzwx.png" },
+  { name: "Reclaimed Walnut", descriptor: "Beeswax finish, heirloom grain.", image: "https://i.postimg.cc/52ywBJCM/Chat-GPT-Image-Apr-22-2026-07-33-12-PM.png" },
+  { name: "German Silver", descriptor: "Hand-hammered, warm patina.", image: "https://i.postimg.cc/HxtLVJ3N/Gemini-Generated-Image-xmqrzqxmqrzqxmqr.png" },
+  { name: "Hand-Woven Jute", descriptor: "Natural, textural, earthen.", image: "https://i.postimg.cc/pdJvBw8b/Gemini-Generated-Image-4l9df54l9df54l9d.png" },
+  { name: "Makrana Marble", descriptor: "Cool, veined, substantial.", image: "https://i.postimg.cc/509X5qXL/Chat-GPT-Image-Apr-22-2026-08-09-00-PM.png" },
+  { name: "Mango Wood", descriptor: "Sun-bleached, oil-finished.", image: "https://i.postimg.cc/t4rwC9hT/Chat-GPT-Image-Apr-22-2026-08-05-30-PM.png" },
 ];
 
 export const Materials = () => {

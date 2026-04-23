@@ -36,7 +36,7 @@ export const Glimpses = () => (
           data-testid="glimpse-left"
         >
           <img
-            src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&q=85"
+            src="https://i.postimg.cc/zGV2Qz5j/Gemini-Generated-Image-9yenbe9yenbe9yen.png"
             alt="Ribbon tying in the Da Fruito atelier"
             className="w-full h-[480px] md:h-[560px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
@@ -88,7 +88,7 @@ export const Glimpses = () => (
           data-testid="glimpse-right"
         >
           <img
-            src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=1200&q=85"
+            src="https://i.postimg.cc/VLLsvL37/Screenshot-2026-04-22-192330.png"
             alt="A finished Da Fruito hamper, ready to be delivered"
             className="w-full h-[480px] md:h-[560px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
