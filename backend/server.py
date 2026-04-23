@@ -1,5 +1,4 @@
-"""
-Da Fruito — Luxury Hamper E-commerce Backend
+""" Da Fruito — Luxury Hamper E-commerce Backend
 FastAPI + MongoDB + Gemini (via Emergent Universal Key) + Razorpay (arch) + WhatsApp
 
 PRODUCTS: 50 hardcoded products synced exactly from the CSV sheet
@@ -30,6 +29,7 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Literal, Dict, Any
 from datetime import datetime, timezone, timedelta
 import bcrypt, jwt
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -152,8 +152,8 @@ class InventoryCmd(BaseModel):
     command: str
 
 class HamperImageRequest(BaseModel):
-    vessel: Optional[Dict[str, Any]]  = None
-    items: List[Dict[str, Any]]       = []
+    vessel: Optional[Dict[str, Any]]  = None      # must include vessel["image"] URL
+    items: List[Dict[str, Any]]       = []         # each item must include item["image"] URL and item["name"]
     gift_card: Optional[Dict[str, Any]] = None
     occasion: Optional[str]           = None
 
@@ -660,6 +660,23 @@ async def ai_inventory_apply(body: InventoryApply, admin=Depends(require_admin))
 
 
 # ===================== Routes: Gemini Image =====================
+async def _url_to_base64(url: str) -> Optional[str]:
+    """Fetch an image URL and return its base64-encoded bytes (no data: prefix).
+    Returns None on any failure or non-http URL. Used for multimodal Gemini input.
+    """
+    if not url or not url.startswith("http"):
+        return None
+    try:
+        import httpx
+        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as hc:
+            r = await hc.get(url)
+            r.raise_for_status()
+            return base64.b64encode(r.content).decode()
+    except Exception as e:
+        logger.warning(f"Image fetch failed for {url}: {e}")
+        return None
+
+
 def build_hamper_prompt(req: HamperImageRequest) -> str:
     vessel     = (req.vessel or {}).get("name", "handcrafted ceramic vessel")
     material   = (req.vessel or {}).get("material", "ceramic")
@@ -684,16 +701,53 @@ async def generate_hamper_image(body: HamperImageRequest):
     if not EMERGENT_LLM_KEY:
         return {"image_data_url": _fallback_image_data_url(), "prompt": prompt, "mock": True}
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        chat = LlmChat(api_key=EMERGENT_LLM_KEY,
-                       session_id=f"img-{uuid.uuid4().hex[:8]}",
-                       system_message="You are a luxury product photographer.")
+        from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+
+        # ── 1. Collect image URLs: vessel first, then up to 8 product images ──
+        image_urls: List[str] = []
+        vessel_img = (body.vessel or {}).get("image", "") or ""
+        if vessel_img:
+            image_urls.append(vessel_img)
+        for item in (body.items or [])[:8]:
+            img_url = item.get("image", "") or ""
+            if img_url:
+                image_urls.append(img_url)
+
+        # ── 2. Download all images concurrently ──
+        fetched = await asyncio.gather(*[_url_to_base64(u) for u in image_urls])
+        file_contents = [ImageContent(image_base64=b64) for b64 in fetched if b64]
+        logger.info(f"Hamper image gen: {len(file_contents)}/{len(image_urls)} images fetched")
+
+        # ── 3. Augment prompt so Gemini composes with the real packaging ──
+        if file_contents:
+            multimodal_prompt = (
+                f"{prompt}\n\n"
+                "IMPORTANT — I am providing you the ACTUAL product packaging photos and the vessel "
+                "image as reference. Compose ONE cohesive cinematic photograph of those exact "
+                "products arranged beautifully inside the vessel shown. Preserve every real "
+                "packaging design (boxes, cans, pouches, jars) exactly as pictured. Do not "
+                "invent or substitute any item. The first image is the vessel; the rest are the "
+                "confections to place inside it."
+            )
+        else:
+            multimodal_prompt = prompt
+
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"img-{uuid.uuid4().hex[:8]}",
+            system_message="You are a luxury product photographer and digital compositor."
+        )
         chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(
-            modalities=["image", "text"])
-        um = UserMessage(text=prompt)
+            modalities=["image", "text"]
+        )
+
+        um = UserMessage(text=multimodal_prompt, file_contents=file_contents or None)
         _, images = await chat.send_message_multimodal_response(um)
+
         if not images:
+            logger.warning("Gemini returned no images — falling back")
             return {"image_data_url": _fallback_image_data_url(), "prompt": prompt, "mock": True}
+
         img      = images[0]
         mime     = img.get("mime_type", "image/png")
         data_url = f"data:{mime};base64,{img['data']}"
@@ -953,7 +1007,7 @@ SEED_VESSELS = [
         "capacity_m":  8,
         "capacity_l":  14,
         "price":       1800,
-        "image":       "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=1200&q=80",
+        "image":       "https://i.postimg.cc/66441nsb/Gemini-Generated-Image-jakzlijakzlijakz-(1).png",
         "description": (
             "Woven by artisans in Assam from sustainably harvested water hyacinth. "
             "A hinged lid, satin lining, and a hand-tied jute bow make this the "
@@ -967,7 +1021,7 @@ SEED_VESSELS = [
         "capacity_m":  6,
         "capacity_l":  10,
         "price":       2600,
-        "image":       "https://images.unsplash.com/photo-1549488344-cbb6c34de5d7?w=1200&q=80",
+        "image":       "https://i.postimg.cc/ZR8Snpwp/Gemini-Generated-Image-who9zawho9zawho9.png",
         "description": (
             "A structured gift box finished in ivory dupioni silk with a magnetic "
             "clasp and champagne grosgrain ribbon. Reusable as a keepsake jewellery "
@@ -981,7 +1035,7 @@ SEED_VESSELS = [
         "capacity_m":  9,
         "capacity_l":  15,
         "price":       2200,
-        "image":       "https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=1200&q=80",
+        "image":       "https://i.postimg.cc/vTJsPh2q/Gemini-Generated-Image-7yvh0x7yvh0x7yvh.png",
         "description": (
             "Slatted mango wood, hand-sanded and finished with food-safe beeswax. "
             "Laser-engraved with the Da Fruito mark. Sturdy enough to become a "
@@ -995,7 +1049,7 @@ SEED_VESSELS = [
         "capacity_m":  4,
         "capacity_l":  6,
         "price":       3800,
-        "image":       "https://images.unsplash.com/photo-1608142737432-b0a0bed6fdee?w=1200&q=80",
+        "image":       "https://i.postimg.cc/NfQLm7rt/Chat-GPT-Image-Apr-23-2026-06-20-19-PM.png",
         "description": (
             "Cool, heavy, and enduring — the same marble from which the Taj Mahal "
             "was built. Bordered with fine brass inlay, this tray arrives dressed "
@@ -1009,28 +1063,31 @@ SEED_VESSELS = [
         "capacity_m":  7,
         "capacity_l":  12,
         "price":       3200,
-        "image":       "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200&q=80",
+        "image":       "https://i.postimg.cc/5tsDKJsr/Chat-GPT-Image-Apr-23-2026-06-22-49-PM.png",
         "description": (
             "A miniature trunk clad in emerald velvet with hand-zardozi gold threadwork "
             "on the lid — echoing the embroidery of Lucknow's finest ateliers. "
             "Brass corner caps and a working lock complete the heirloom effect."
         ),
     },
-    {
-        "name":        "The Hammered Copper Hamper",
-        "material":    "Hand-Hammered Pure Copper",
-        "capacity_s":  3,
-        "capacity_m":  5,
-        "capacity_l":  8,
-        "price":       4200,
-        "image":       "https://images.unsplash.com/photo-1603006905003-be475563bc59?w=1200&q=80",
-        "description": (
-            "Beaten by coppersmiths in Moradabad into a low, wide bowl with fluted "
-            "walls. Naturally antimicrobial, pleasingly heavy, and alive with the "
-            "warm glow that only aged copper carries. The most bespoke vessel in "
-            "the Da Fruito collection."
-        ),
-    },
+  {
+    "name": "The Peacock's Pride festive Hamper",
+    "material": "Silver-Plated Etched Metal",
+    "capacity_s": 1,
+    "capacity_m": 2,
+    "capacity_l": 3,
+    "price": 3800,
+    "image": "https://i.postimg.cc/T36rFWSy/Gemini-Generated-Image-xzwx2lxzwx2lxzwx.png",
+    "description": (
+        "An intricate two-tiered silver-plated masterpiece. Featuring an etched "
+        "peacock figurine rising between filigree bowls, this bespoke hamper "
+        "reinvents festive gifting. The top tier is adorned with a rich red ribbon "
+        "and holds an assortment of premium nuts, while the base overflows with "
+        "traditional silver-plated coins. Set on a maroon velvet base with gold "
+        "brocade ribbons, it brings a majestic touch to your traditional "
+        "celebrations."
+    ),
+}
 ]
 
 SEED_PRODUCTS = [
@@ -1039,7 +1096,7 @@ SEED_PRODUCTS = [
     {"name": "Butter Shortbread",                             "category": "chocolates_cookies", "country": "India", "price": 200,  "image": "https://lh3.googleusercontent.com/d/1YJaS5XgDIEAx0IGdTUOryJN3lmxxrJZk"},
     {"name": "Chocolate Wafers",                              "category": "chocolates_cookies", "country": "India", "price": 50,   "image": "https://lh3.googleusercontent.com/d/1hzwMOFe8ITsivStstgCLCkSehldKcSIW"},
     {"name": "Chocolate-Covered Almonds",                     "category": "chocolates_cookies", "country": "India", "price": 240,  "image": "https://lh3.googleusercontent.com/d/1QiGyoxeIzGdyM-2cytNakkueaVmvwknV"},
-    {"name": "Chocolate Truffles",                            "category": "chocolates_cookies", "country": "India", "price": 350,  "image": "https://drive.google.com/uc?export=view&id=1r5GYo4PNXHxtOiaVGyWOhnNZfLXq_pji"},
+    {"name": "Chocolate Truffles",                            "category": "chocolates_cookies", "country": "India", "price": 350,  "image": "https://i.postimg.cc/bNhkMPXs/Chocolate-Truffles.png"},
     {"name": "Chocolate Dipped Marshmallows",                 "category": "chocolates_cookies", "country": "India", "price": 80,   "image": "https://i.postimg.cc/9MxTczkq/Chocolate-Dipped-Marshmallows.png"},
     {"name": "Oatmeal Raisin Cookies",                        "category": "chocolates_cookies", "country": "India", "price": 80,   "image": "https://i.postimg.cc/vBjBPnj6/Oatmeal-Raisin-Cookies.png"},
     {"name": "Dark Chocolate Wafers (Replaced Duplicate)",    "category": "chocolates_cookies", "country": "India", "price": 40,   "image": "https://i.postimg.cc/fRjKScq1/Dark-Chocolate-Wafers-(Replaced-Duplicate).png"},
@@ -1096,7 +1153,7 @@ SEED_HAMPERS = [
         "name": "The Everlasting Bonds",
         "occasion": "anniversary",
         "price": 7800,
-        "image": "https://images.unsplash.com/photo-1732928730431-11c206639a38?w=1200&q=80",
+        "image": "https://i.postimg.cc/ydS3p17M/Gemini-Generated-Image-8ifihj8ifihj8ifi.png",
         "description": "A ceremony in a ceramic vessel. Single-origin chocolates, first-flush tea, and a handwritten note.",
         "materials": ["Makrana Marble", "Gold Ribbon"],
         "items": ["Single-Origin Dark Chocolate Bar", "Vahdam Organic Green Tea", "Gold-Plated Brass Lotus Diya", "Chocolate Truffles"],
@@ -1105,7 +1162,7 @@ SEED_HAMPERS = [
         "name": "The Celebration Edit",
         "occasion": "birthday",
         "price": 5400,
-        "image": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&q=80",
+        "image": "https://i.postimg.cc/wj39gfSJ/Gemini-Generated-Image-83dgwn83dgwn83dg-(2).png",
         "description": "Playful and indulgent — champagne truffles, shortbread, and toasted almonds.",
         "materials": ["Ivory Silk", "Champagne Ribbon"],
         "items": ["Chocolate Truffles", "Butter Shortbread", "California Almonds (Badam)", "4700BC Gourmet Popcorn Tin"],
@@ -1186,3 +1243,4 @@ app.add_middleware(
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+

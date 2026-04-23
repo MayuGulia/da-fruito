@@ -9,12 +9,12 @@ import { useCartStore } from "../store/cartStore";
 import { useAuthStore } from "../store/authStore";
 
 const STEPS = [
-  { id: 1, label: "Vessel" },
+  { id: 1,   label: "Vessel" },
   { id: 1.5, label: "Budget" },
-  { id: 2, label: "Confections" },
+  { id: 2,   label: "Confections" },
   { id: 2.5, label: "Gift Card" },
-  { id: 3, label: "Preview" },
-  { id: 4, label: "Details" },
+  { id: 3,   label: "Preview" },
+  { id: 4,   label: "Details" },
 ];
 
 const CATEGORIES = [
@@ -58,8 +58,154 @@ const OCCASION_TILES = [
   ]},
 ];
 
-// Elegant image-loading bar shown while the AI composes the bespoke hamper preview.
-// Replaces the earlier brand-animated ribbon/bow assembly sequence per user request.
+// ─── Helper: fetch a URL and return { base64, mimeType } ────────────────────
+// We proxy through your backend to avoid CORS issues with external image URLs.
+async function fetchImageAsBase64(imageUrl) {
+  try {
+    // Option A: use your backend proxy endpoint (recommended, avoids CORS)
+    const { data } = await api.post("/proxy-image", { url: imageUrl });
+    // Expected response: { base64: "...", mime_type: "image/jpeg" }
+    return { base64: data.base64, mimeType: data.mime_type || "image/jpeg" };
+  } catch {
+    // Option B: direct fetch fallback (works if images are on same domain or CORS-enabled CDN)
+    try {
+      const res = await fetch(imageUrl);
+      const blob = await res.blob();
+      const mimeType = blob.type || "image/jpeg";
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result.split(",")[1];
+          resolve({ base64, mimeType });
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (err) {
+      console.error("Could not fetch image:", imageUrl, err);
+      return null;
+    }
+  }
+}
+
+// ─── Helper: call Gemini multimodal API with actual product images ────────────
+// This replaces your old /generate-hamper-image endpoint logic.
+// You can either call this from the frontend (if GEMINI_API_KEY is safe to expose,
+// e.g. in a restricted dev environment) or move this logic to your FastAPI backend.
+//
+// RECOMMENDED: Move this to FastAPI backend as POST /generate-hamper-image
+// and call api.post("/generate-hamper-image", payload) instead.
+// The backend version is shown in the comment at the bottom of this file.
+//
+async function callGeminiWithImages({ vessel, items, giftCard, occasion, GEMINI_API_KEY }) {
+  // Step 1: Fetch all product images as base64
+  const imageDataList = await Promise.all(
+    items.map(async (item) => {
+      const imgData = await fetchImageAsBase64(item.image);
+      return { item, imgData };
+    })
+  );
+
+  // Step 2: Build Gemini multimodal parts array
+  // Format: [image1, image2, ..., text_prompt]
+  const parts = [];
+
+  // Add vessel image first if available
+  if (vessel?.image) {
+    const vesselImg = await fetchImageAsBase64(vessel.image);
+    if (vesselImg) {
+      parts.push({
+        inlineData: {
+          mimeType: vesselImg.mimeType,
+          data: vesselImg.base64,
+        },
+      });
+      parts.push({
+        text: `This is the gift vessel/tray named "${vessel.name}" (${vessel.material}).`,
+      });
+    }
+  }
+
+  // Add each product image with its label
+  for (const { item, imgData } of imageDataList) {
+    if (imgData) {
+      parts.push({
+        inlineData: {
+          mimeType: imgData.mimeType,
+          data: imgData.base64,
+        },
+      });
+      parts.push({
+        text: `Product: "${item.name}" from ${item.country} — ₹${item.price}`,
+      });
+    }
+  }
+
+  // Add the composition prompt
+  const occasionText = occasion || giftCard?.occasion || "a special occasion";
+  parts.push({
+    text: `
+You are a luxury gift hamper visual composer for Da Fruito, a premium gifting brand.
+
+I have provided you with:
+1. The gift vessel/tray image (first image above)
+2. The selected product images with their names and prices
+
+Your task: Create a beautiful, photorealistic top-down composition image of these EXACT products arranged elegantly inside the vessel shown. 
+
+Requirements:
+- Use the ACTUAL product images provided — do not invent or substitute any products
+- Arrange them artfully inside or around the vessel
+- Add a gold silk ribbon and bow at the bottom
+- Warm, moody lighting with dark background (#1a1008 tone)
+- Label each product with its name in small elegant gold text
+- Add "Da Fruito" branding in the bottom center in italic serif font
+- The occasion is: ${occasionText}
+- Overall aesthetic: luxury, warm, editorial — like a high-end gift catalogue photo
+- Output as a single square image (1:1 ratio)
+
+This is a preview image the customer will see before confirming their bespoke hamper order.
+`.trim(),
+  });
+
+  // Step 3: Call Gemini API
+  // NOTE: Use gemini-2.0-flash-preview-image-generation for image output
+  const GEMINI_MODEL = "gemini-2.0-flash-preview-image-generation";
+  const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+  const response = await fetch(GEMINI_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts }],
+      generationConfig: {
+        responseModalities: ["IMAGE", "TEXT"],
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Gemini API error: ${errText}`);
+  }
+
+  const data = await response.json();
+
+  // Step 4: Extract the generated image from response
+  // Gemini returns image as inlineData in the response parts
+  const responseParts = data?.candidates?.[0]?.content?.parts || [];
+  for (const part of responseParts) {
+    if (part.inlineData?.data) {
+      const mimeType = part.inlineData.mimeType || "image/png";
+      const dataUrl = `data:${mimeType};base64,${part.inlineData.data}`;
+      return dataUrl;
+    }
+  }
+
+  throw new Error("Gemini did not return an image in the response.");
+}
+
+// ─── Loading bar shown while Gemini composes the preview ────────────────────
 const ComposingBar = ({ active }) => {
   const [pct, setPct] = useState(0);
   useEffect(() => {
@@ -67,7 +213,6 @@ const ComposingBar = ({ active }) => {
     setPct(0);
     let p = 0;
     const id = setInterval(() => {
-      // ease toward 92% while active; jump to 100 when active flips to false
       p = p + (92 - p) * 0.08;
       setPct(Math.min(92, Math.round(p)));
     }, 180);
@@ -96,7 +241,9 @@ const ComposingBar = ({ active }) => {
         )}
       </div>
       <p className="text-center font-body italic text-[#7A9E9C] mt-4 text-sm">
-        {active ? "Our atelier is carefully arranging each element." : "Your bespoke hamper is ready."}
+        {active
+          ? "Gemini is composing your actual products into a hamper preview…"
+          : "Your bespoke hamper is ready."}
       </p>
     </div>
   );
@@ -104,15 +251,29 @@ const ComposingBar = ({ active }) => {
 
 export default function CreateHamper() {
   const nav = useNavigate();
-  const { step, setStep, vessel, setVessel, budget, setBudget, selectedItems, toggleItem, giftCard, setGiftCard, previewImage, setPreviewImage, runningTotal, totalWeight, reset } = useBuilderStore();
-  const [vessels, setVessels] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [cat, setCat] = useState("chocolates_cookies");
+  const {
+    step, setStep,
+    vessel, setVessel,
+    budget, setBudget,
+    selectedItems, toggleItem,
+    giftCard, setGiftCard,
+    previewImage, setPreviewImage,
+    runningTotal, totalWeight, reset,
+  } = useBuilderStore();
+
+  const [vessels,    setVessels]    = useState([]);
+  const [products,   setProducts]   = useState([]);
+  const [cat,        setCat]        = useState("chocolates_cookies");
   const [loadingImg, setLoadingImg] = useState(false);
   const [whatsappNum, setWhatsappNum] = useState(WHATSAPP_NUMBER_DEFAULT);
+
   const addToCart = useCartStore((s) => s.add);
-  const user = useAuthStore((s) => s.user);
-  const [details, setDetails] = useState({ sender_name: "", recipient_name: "", contact: "", address: "", delivery_date: "", occasion: "", notes: "" });
+  const user      = useAuthStore((s)  => s.user);
+
+  const [details, setDetails] = useState({
+    sender_name: "", recipient_name: "", contact: "",
+    address: "", delivery_date: "", occasion: "", notes: "",
+  });
 
   useEffect(() => {
     api.get("/vessels").then(({ data }) => setVessels(data)).catch(() => {});
@@ -120,10 +281,18 @@ export default function CreateHamper() {
     api.get("/whatsapp-number").then(({ data }) => data?.number && setWhatsappNum(data.number)).catch(() => {});
   }, []);
 
-  const filteredProducts = useMemo(() => products.filter((p) => p.category === cat), [products, cat]);
-  const total = runningTotal();
-  const weight = totalWeight();
-  const currentStepIndex = STEPS.findIndex((s) => s.id === step);
+  // Reset the persisted builder state on every fresh entry so stale
+  // selectedItems / vessel / previewImage from a previous session do not
+  // bleed into the current totals bar.
+  useEffect(() => {
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const filteredProducts   = useMemo(() => products.filter((p) => p.category === cat), [products, cat]);
+  const total              = runningTotal();
+  const weight             = totalWeight();
+  const currentStepIndex   = STEPS.findIndex((s) => s.id === step);
 
   const next = () => {
     const i = STEPS.findIndex((s) => s.id === step);
@@ -134,14 +303,42 @@ export default function CreateHamper() {
     if (i > 0) setStep(STEPS[i - 1].id);
   };
 
+  // ─── UPDATED: compose preview using real product images via Gemini Vision ──
   const composeHamperImage = async () => {
     setLoadingImg(true);
     try {
+      // ── APPROACH A: Backend handles Gemini call (RECOMMENDED for production) ──
+      // Your FastAPI /generate-hamper-image endpoint fetches product images,
+      // calls Gemini multimodal, and returns { image_data_url: "data:image/png;base64,..." }
+      //
+      // The backend should implement the same logic as callGeminiWithImages() above.
+      // See the backend pseudocode comment at the bottom of this file.
+      //
       const { data } = await api.post("/generate-hamper-image", {
-        vessel, items: selectedItems, gift_card: giftCard, occasion: details.occasion,
+        vessel,
+        items: selectedItems,     // ← includes item.image URLs
+        gift_card: giftCard,
+        occasion: details.occasion,
+        // backend will fetch images, convert to base64, and send to Gemini
       });
       setPreviewImage(data.image_data_url);
-    } catch {
+
+      // ── APPROACH B: Frontend calls Gemini directly (quick dev/testing only) ──
+      // Uncomment this block and comment out the api.post above if you want to
+      // test without changing the backend. Replace with your actual key.
+      //
+      // const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+      // const dataUrl = await callGeminiWithImages({
+      //   vessel,
+      //   items: selectedItems,
+      //   giftCard,
+      //   occasion: details.occasion,
+      //   GEMINI_API_KEY,
+      // });
+      // setPreviewImage(dataUrl);
+
+    } catch (err) {
+      console.error("Hamper composition error:", err);
       toast.error("Could not compose preview. Please try again.");
     } finally {
       setLoadingImg(false);
@@ -160,26 +357,30 @@ export default function CreateHamper() {
 
   const addBespokeToCart = async () => {
     if (!user) { toast.error("Please sign in to add to cart."); return; }
-    await addToCart({ kind: "bespoke", name: `Bespoke Hamper · ${vessel?.name}`, price: total, image: previewImage || vessel?.image, quantity: 1, bespoke: bespokePayload() });
+    await addToCart({
+      kind: "bespoke",
+      name: `Bespoke Hamper · ${vessel?.name}`,
+      price: total,
+      image: previewImage || vessel?.image,
+      quantity: 1,
+      bespoke: bespokePayload(),
+    });
     toast.success("Your bespoke hamper has been added to cart.");
     nav("/cart");
   };
 
   const whatsappCompose = () => {
     const lines = [
-      "*Da Fruito — Bespoke Hamper Order*",
-      "",
+      "*Da Fruito — Bespoke Hamper Order*", "",
       `*Sender:* ${details.sender_name || "—"}`,
       `*Recipient:* ${details.recipient_name || "—"} (${details.contact || "—"})`,
       `*Address:* ${details.address || "—"}`,
       `*Occasion:* ${details.occasion || "—"}`,
-      `*Delivery:* ${details.delivery_date || "As soon as possible"}`,
-      "",
+      `*Delivery:* ${details.delivery_date || "As soon as possible"}`, "",
       `*Vessel:* ${vessel?.name || "—"} (${vessel?.material || ""}) — ${formatINR(vessel?.price || 0)}`,
       `*Items:*`,
       ...selectedItems.map((i) => `  — ${i.name} (${i.country}) · ${formatINR(i.price)}`),
-      giftCard?.enabled ? `*Gift card:* "${giftCard.message}"` : `*Gift card:* No`,
-      "",
+      giftCard?.enabled ? `*Gift card:* "${giftCard.message}"` : `*Gift card:* No`, "",
       `*Budget:* ${formatINR(budget)}`,
       `*Estimated total:* ${formatINR(total)}`,
       details.notes ? `*Notes:* ${details.notes}` : "",
@@ -189,17 +390,28 @@ export default function CreateHamper() {
 
   const placeOrder = async (method) => {
     if (!vessel || selectedItems.length === 0) { toast.error("Please complete your hamper."); return; }
-    if (!details.sender_name || !details.recipient_name || !details.contact || !details.address) { toast.error("Please fill all required delivery details."); return; }
+    if (!details.sender_name || !details.recipient_name || !details.contact || !details.address) {
+      toast.error("Please fill all required delivery details."); return;
+    }
     try {
       if (method === "razorpay") {
         const { data: order } = await api.post("/create-order", { amount: total * 100, currency: "INR" });
-        // In mock mode, just verify & persist
-        await api.post("/verify-payment", { razorpay_order_id: order.id, razorpay_payment_id: `pay_mock_${Date.now()}`, razorpay_signature: "mock" });
-        await api.post("/orders", { items: [{ ...bespokePayload(), name: `Bespoke · ${vessel?.name}` }], total, ...details, payment_method: "razorpay", razorpay_order_id: order.id });
+        await api.post("/verify-payment", {
+          razorpay_order_id: order.id,
+          razorpay_payment_id: `pay_mock_${Date.now()}`,
+          razorpay_signature: "mock",
+        });
+        await api.post("/orders", {
+          items: [{ ...bespokePayload(), name: `Bespoke · ${vessel?.name}` }],
+          total, ...details, payment_method: "razorpay", razorpay_order_id: order.id,
+        });
         toast.success("Payment successful. Your bespoke hamper is being prepared.");
         reset(); nav("/account");
       } else if (method === "cod") {
-        await api.post("/orders", { items: [{ ...bespokePayload(), name: `Bespoke · ${vessel?.name}` }], total, ...details, payment_method: "cod" });
+        await api.post("/orders", {
+          items: [{ ...bespokePayload(), name: `Bespoke · ${vessel?.name}` }],
+          total, ...details, payment_method: "cod",
+        });
         toast.success("Order placed. Cash on delivery confirmed.");
         reset(); nav("/account");
       } else if (method === "whatsapp") {
@@ -215,25 +427,33 @@ export default function CreateHamper() {
       {/* Progress */}
       <div className="lux-container">
         <div className="flex items-center justify-between mb-2 text-[#7A9E9C] font-ui text-[0.7rem] tracking-[0.3em] uppercase">
-          <button onClick={() => nav("/")} className="flex items-center gap-2 hover:text-[#2A7E7C]" data-testid="builder-exit"><ArrowLeft size={14} /> Exit Builder</button>
+          <button onClick={() => nav("/")} className="flex items-center gap-2 hover:text-[#2A7E7C]" data-testid="builder-exit">
+            <ArrowLeft size={14} /> Exit Builder
+          </button>
           <div>Step {currentStepIndex + 1} of {STEPS.length}</div>
         </div>
         <div className="relative h-[2px] bg-[#C8DEDD] my-6">
-          <motion.div className="absolute top-0 left-0 h-full bg-[#2A7E7C]" animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }} transition={{ duration: 0.6 }} />
+          <motion.div
+            className="absolute top-0 left-0 h-full bg-[#2A7E7C]"
+            animate={{ width: `${(currentStepIndex / (STEPS.length - 1)) * 100}%` }}
+            transition={{ duration: 0.6 }}
+          />
           <div className="absolute inset-0 flex justify-between -top-[10px]">
             {STEPS.map((s, i) => (
               <div key={s.id} className="flex flex-col items-center gap-2">
                 <motion.div
                   animate={{
                     backgroundColor: i < currentStepIndex ? "#7A9E9C" : (i === currentStepIndex ? "#2A7E7C" : "#FFFFFF"),
-                    borderColor: i <= currentStepIndex ? "#2A7E7C" : "#C8DEDD",
-                    boxShadow: i === currentStepIndex ? "0 0 0 4px rgba(176,125,98,0.2)" : "0 0 0 0 rgba(176,125,98,0)",
+                    borderColor:     i <= currentStepIndex ? "#2A7E7C" : "#C8DEDD",
+                    boxShadow:       i === currentStepIndex ? "0 0 0 4px rgba(176,125,98,0.2)" : "0 0 0 0 rgba(176,125,98,0)",
                   }}
                   className="w-5 h-5 rounded-full border flex items-center justify-center"
                 >
                   {i < currentStepIndex && <Check size={12} className="text-white" />}
                 </motion.div>
-                <span className={`hidden md:block font-ui text-[0.64rem] tracking-[0.25em] uppercase ${i === currentStepIndex ? "text-[#2A7E7C]" : "text-[#7A9E9C]"}`}>{s.label}</span>
+                <span className={`hidden md:block font-ui text-[0.64rem] tracking-[0.25em] uppercase ${i === currentStepIndex ? "text-[#2A7E7C]" : "text-[#7A9E9C]"}`}>
+                  {s.label}
+                </span>
               </div>
             ))}
           </div>
@@ -246,14 +466,17 @@ export default function CreateHamper() {
           initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, y: -20, filter: "blur(6px)" }}
-          transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="lux-container mt-14"
         >
+          {/* ── STEP 1: Vessel ─────────────────────────────────────────────── */}
           {step === 1 && (
             <div data-testid="step-vessel">
               <div className="text-center mb-12">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step One</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">Begin with the <em className="italic text-[#C4A35A]">Extraordinary</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">
+                  Begin with the <em className="italic text-[#C4A35A]">Extraordinary</em>
+                </h2>
                 <p className="font-body italic text-ivory/70 mt-4 text-lg">Every masterpiece starts with its canvas.</p>
               </div>
               <div className="grid md:grid-cols-3 gap-8">
@@ -281,7 +504,9 @@ export default function CreateHamper() {
                           const caps = [v.capacity_s, v.capacity_m, v.capacity_l];
                           return (
                             <div key={s} className="flex-1">
-                              <div className="h-1 bg-bronze/40 rounded-full overflow-hidden"><div className="h-full bg-gold" style={{ width: `${(caps[i] / 12) * 100}%` }} /></div>
+                              <div className="h-1 bg-bronze/40 rounded-full overflow-hidden">
+                                <div className="h-full bg-gold" style={{ width: `${(caps[i] / 12) * 100}%` }} />
+                              </div>
                               <div className="font-ui text-[0.6rem] tracking-[0.2em] text-bronze mt-1">{s} · {caps[i]}</div>
                             </div>
                           );
@@ -293,29 +518,39 @@ export default function CreateHamper() {
                 ))}
               </div>
               <div className="flex justify-end mt-10">
-                <button data-testid="step-next" disabled={!vessel} onClick={next} className="btn-gold">Continue <ChevronRight size={16} /></button>
+                <button data-testid="step-next" disabled={!vessel} onClick={next} className="btn-gold">
+                  Continue <ChevronRight size={16} />
+                </button>
               </div>
             </div>
           )}
 
+          {/* ── STEP 1.5: Budget ───────────────────────────────────────────── */}
           {step === 1.5 && (
             <div data-testid="step-budget" className="max-w-3xl mx-auto text-center">
               <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Two</div>
-              <h2 className="font-display text-5xl md:text-6xl text-ivory">Set Your <em className="italic text-[#C4A35A]">Gifting Budget</em></h2>
+              <h2 className="font-display text-5xl md:text-6xl text-ivory">
+                Set Your <em className="italic text-[#C4A35A]">Gifting Budget</em>
+              </h2>
               <p className="font-body italic text-ivory/70 mt-4 text-lg">We will curate only what fits beautifully within your range.</p>
               <div className="mt-14">
                 <div className="font-display text-6xl md:text-7xl text-[#C4A35A]">{formatINR(budget)}</div>
                 <input
-                  type="range" min={1500} max={30000} step={500} value={budget} onChange={(e) => setBudget(parseInt(e.target.value))}
+                  type="range" min={1500} max={30000} step={500} value={budget}
+                  onChange={(e) => setBudget(parseInt(e.target.value))}
                   data-testid="budget-slider"
                   className="w-full mt-8 accent-gold"
                 />
                 <div className="flex flex-wrap gap-3 justify-center mt-8">
                   {[2500, 5000, 8000, 12000, 18000, 25000].map((p) => (
-                    <button key={p} onClick={() => setBudget(p)} data-testid={`budget-${p}`} className={`pill ${budget === p ? "pill-active" : ""}`}>{formatINR(p)}</button>
+                    <button key={p} onClick={() => setBudget(p)} data-testid={`budget-${p}`} className={`pill ${budget === p ? "pill-active" : ""}`}>
+                      {formatINR(p)}
+                    </button>
                   ))}
                 </div>
-                <p className="font-body italic text-ivory/60 mt-10">Approx. {Math.max(3, Math.floor(budget / 1000))}–{Math.max(5, Math.floor(budget / 700))} confections within this range.</p>
+                <p className="font-body italic text-ivory/60 mt-10">
+                  Approx. {Math.max(3, Math.floor(budget / 1000))}–{Math.max(5, Math.floor(budget / 700))} confections within this range.
+                </p>
               </div>
               <div className="flex justify-between mt-12">
                 <button onClick={back} className="btn-outline-gold"><ArrowLeft size={14} /> Back</button>
@@ -324,21 +559,28 @@ export default function CreateHamper() {
             </div>
           )}
 
+          {/* ── STEP 2: Confections ────────────────────────────────────────── */}
           {step === 2 && (
             <div data-testid="step-confections">
               <div className="text-center mb-10">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Three</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">Fill It with <em className="italic text-[#C4A35A]">Desire</em></h2>
-                <p className="font-body italic text-ivory/70 mt-4 text-lg">All confections are imported and curated exclusively for this collection.</p>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">
+                  Fill It with <em className="italic text-[#C4A35A]">Desire</em>
+                </h2>
+                <p className="font-body italic text-ivory/70 mt-4 text-lg">
+                  All confections are imported and curated exclusively for this collection.
+                </p>
               </div>
               <div className="flex gap-3 overflow-x-auto scrollbar-none mb-8 justify-center">
                 {CATEGORIES.map((c) => (
-                  <button key={c.id} onClick={() => setCat(c.id)} data-testid={`cat-${c.id}`} className={`pill ${cat === c.id ? "pill-active" : ""}`}>{c.label}</button>
+                  <button key={c.id} onClick={() => setCat(c.id)} data-testid={`cat-${c.id}`} className={`pill ${cat === c.id ? "pill-active" : ""}`}>
+                    {c.label}
+                  </button>
                 ))}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5 pb-28">
                 {filteredProducts.map((p) => {
-                  const selected = !!selectedItems.find((i) => i.id === p.id);
+                  const selected   = !!selectedItems.find((i) => i.id === p.id);
                   const overBudget = runningTotal() + p.price > budget;
                   return (
                     <motion.button
@@ -351,7 +593,9 @@ export default function CreateHamper() {
                       <div className="relative h-40 overflow-hidden">
                         <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                         {selected && (
-                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-gold flex items-center justify-center"><Check size={16} className="text-walnut" /></motion.div>
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-gold flex items-center justify-center">
+                            <Check size={16} className="text-walnut" />
+                          </motion.div>
                         )}
                         {overBudget && !selected && (
                           <div className="absolute inset-0 bg-obsidian/60 flex items-center justify-center">
@@ -360,7 +604,7 @@ export default function CreateHamper() {
                         )}
                       </div>
                       <div className="p-4">
-                        <div className="font-ui text-sm text-ivory group-hover:text-[#C4A35A]">{p.name}</div>
+                        <div className="font-ui text-sm text-ivory">{p.name}</div>
                         <div className="font-body italic text-[0.72rem] text-bronze mt-1">{p.country}</div>
                         <div className="font-display text-lg text-[#C4A35A] mt-2">{formatINR(p.price)}</div>
                       </div>
@@ -379,23 +623,28 @@ export default function CreateHamper() {
                   </div>
                   <div className="flex gap-3">
                     <button onClick={back} className="btn-outline-gold"><ArrowLeft size={14} /> Back</button>
-                    <button data-testid="confections-continue" disabled={selectedItems.length < 3} onClick={next} className="btn-gold">Continue <ChevronRight size={16} /></button>
+                    <button data-testid="confections-continue" disabled={selectedItems.length < 3} onClick={next} className="btn-gold">
+                      Continue <ChevronRight size={16} />
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
+          {/* ── STEP 2.5: Gift Card ────────────────────────────────────────── */}
           {step === 2.5 && (
             <div data-testid="step-gift-card" className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Four</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">Shall We Add a <em className="italic text-[#C4A35A]">Word?</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">
+                  Shall We Add a <em className="italic text-[#C4A35A]">Word?</em>
+                </h2>
                 <p className="font-body italic text-ivory/70 mt-4 text-lg">A handwritten card, included with your hamper — complimentary.</p>
               </div>
               <div className="flex gap-3 justify-center mb-10">
                 <button data-testid="gc-enable" onClick={() => setGiftCard({ enabled: true })} className={`pill ${giftCard.enabled ? "pill-active" : ""}`}>Yes, add a card</button>
-                <button data-testid="gc-skip" onClick={() => setGiftCard({ enabled: false })} className={`pill ${!giftCard.enabled ? "pill-active" : ""}`}>Skip for now</button>
+                <button data-testid="gc-skip"   onClick={() => setGiftCard({ enabled: false })} className={`pill ${!giftCard.enabled ? "pill-active" : ""}`}>Skip for now</button>
               </div>
               {giftCard.enabled && (
                 <div className="grid md:grid-cols-2 gap-8">
@@ -403,7 +652,9 @@ export default function CreateHamper() {
                     <div className="text-[0.7rem] uppercase tracking-[0.3em] text-bronze font-ui mb-3">Occasion</div>
                     <div className="flex flex-wrap gap-2 mb-6">
                       {OCCASION_TILES.map((o) => (
-                        <button key={o.id} onClick={() => setGiftCard({ occasion: o.id, message: o.templates[0] })} className={`pill ${giftCard.occasion === o.id ? "pill-active" : ""}`} data-testid={`gc-occ-${o.id}`}>{o.label}</button>
+                        <button key={o.id} onClick={() => setGiftCard({ occasion: o.id, message: o.templates[0] })} className={`pill ${giftCard.occasion === o.id ? "pill-active" : ""}`} data-testid={`gc-occ-${o.id}`}>
+                          {o.label}
+                        </button>
                       ))}
                     </div>
                     {giftCard.occasion && (
@@ -411,7 +662,9 @@ export default function CreateHamper() {
                         <div className="text-[0.7rem] uppercase tracking-[0.3em] text-bronze font-ui mb-3">Suggested Messages</div>
                         <div className="space-y-3">
                           {(OCCASION_TILES.find((o) => o.id === giftCard.occasion)?.templates || []).map((t, i) => (
-                            <button key={i} onClick={() => setGiftCard({ message: t })} className="w-full text-left card-lux !p-4 text-ivory/80 font-body italic hover:text-[#C4A35A]">{t}</button>
+                            <button key={i} onClick={() => setGiftCard({ message: t })} className="w-full text-left card-lux !p-4 text-ivory/80 font-body italic hover:text-[#C4A35A]">
+                              {t}
+                            </button>
                           ))}
                         </div>
                       </>
@@ -432,7 +685,9 @@ export default function CreateHamper() {
                       <div className="font-ui text-[0.6rem] tracking-[0.4em] text-berry uppercase">Da Fruito</div>
                       <div className="hr-gold w-16 my-4" />
                       {giftCard.recipient && <div className="font-display italic text-2xl text-walnut mb-4">To, {giftCard.recipient}</div>}
-                      <div className="font-script text-2xl text-walnut leading-snug whitespace-pre-wrap">{giftCard.message || "Your handwritten words will appear here."}</div>
+                      <div className="font-script text-2xl text-walnut leading-snug whitespace-pre-wrap">
+                        {giftCard.message || "Your handwritten words will appear here."}
+                      </div>
                       <div className="mt-auto pt-6 font-body italic text-walnut/60 text-xs">With love, from our atelier.</div>
                     </motion.div>
                   </div>
@@ -445,14 +700,19 @@ export default function CreateHamper() {
             </div>
           )}
 
+          {/* ── STEP 3: Preview ────────────────────────────────────────────── */}
           {step === 3 && (
             <div data-testid="step-preview" className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
                 <div className="text-[0.7rem] tracking-[0.4em] text-bronze uppercase font-ui mb-3">Step Five</div>
-                <h2 className="font-display text-5xl md:text-6xl text-ivory">A Glimpse of Your <em className="italic text-[#C4A35A]">Masterpiece</em></h2>
+                <h2 className="font-display text-5xl md:text-6xl text-ivory">
+                  A Glimpse of Your <em className="italic text-[#C4A35A]">Masterpiece</em>
+                </h2>
+                <p className="font-body italic text-ivory/60 mt-3 text-sm">
+                  Gemini composes a preview using your actual selected product images.
+                </p>
               </div>
 
-              {/* Clean image-loading bar (replaces prior branded animation per user request) */}
               {(loadingImg || !previewImage) && (
                 <div className="min-h-[260px] flex items-center justify-center py-14">
                   <ComposingBar active={loadingImg || !previewImage} />
@@ -463,34 +723,40 @@ export default function CreateHamper() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.96, filter: "blur(12px)" }}
                   animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 1.0, ease: [0.22,1,0.36,1] }}
+                  transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
                   className="mt-4 relative text-center"
                 >
                   <div className="absolute -inset-8 bg-gold/10 blur-3xl rounded-full pointer-events-none" />
-                  <img src={previewImage} alt="Your bespoke hamper" className="relative mx-auto max-h-[540px] object-contain border border-gold/30 rounded-xl" data-testid="preview-image" />
+                  <img
+                    src={previewImage}
+                    alt="Your bespoke hamper"
+                    className="relative mx-auto max-h-[540px] object-contain border border-gold/30 rounded-xl"
+                    data-testid="preview-image"
+                  />
                   <p className="font-display italic text-ivory/70 mt-4">Your bespoke hamper, as it will be delivered.</p>
                 </motion.div>
               )}
 
               <div className="flex flex-wrap gap-3 items-center justify-between mt-10">
-                <button onClick={back} className="btn-outline-gold" data-testid="preview-back"><ArrowLeft size={14} /> Back</button>
+                <button onClick={back} className="btn-outline-gold" data-testid="preview-back">
+                  <ArrowLeft size={14} /> Back
+                </button>
                 <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => { setStep(2); setPreviewImage(null); }}
-                    className="btn-outline-gold"
-                    data-testid="redesign"
-                  >Redesign Hamper</button>
-                  <button
-                    onClick={() => { reset(); setStep(1); }}
-                    className="btn-outline-gold"
-                    data-testid="create-another"
-                  >Create Another Hamper</button>
-                  <button onClick={next} className="btn-gold" data-testid="confirm-proceed" disabled={!previewImage}>Confirm & Proceed <ChevronRight size={16} /></button>
+                  <button onClick={() => { setStep(2); setPreviewImage(null); }} className="btn-outline-gold" data-testid="redesign">
+                    Redesign Hamper
+                  </button>
+                  <button onClick={() => { reset(); setStep(1); }} className="btn-outline-gold" data-testid="create-another">
+                    Create Another Hamper
+                  </button>
+                  <button onClick={next} className="btn-gold" data-testid="confirm-proceed" disabled={!previewImage}>
+                    Confirm & Proceed <ChevronRight size={16} />
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
+          {/* ── STEP 4: Details ────────────────────────────────────────────── */}
           {step === 4 && (
             <div data-testid="step-details" className="grid lg:grid-cols-[1.15fr_1fr] gap-12">
               <div>
@@ -530,7 +796,10 @@ export default function CreateHamper() {
                 <div className="hr-gold my-4" />
                 <div className="space-y-2 font-body text-ivory/80 max-h-60 overflow-y-auto pr-2">
                   {selectedItems.map((i) => (
-                    <div key={i.id} className="flex justify-between text-sm"><span>— {i.name}</span><span className="text-[#C4A35A]">{formatINR(i.price)}</span></div>
+                    <div key={i.id} className="flex justify-between text-sm">
+                      <span>— {i.name}</span>
+                      <span className="text-[#C4A35A]">{formatINR(i.price)}</span>
+                    </div>
                   ))}
                 </div>
                 <div className="hr-gold my-4" />
@@ -545,3 +814,87 @@ export default function CreateHamper() {
     </div>
   );
 }
+
+/*
+══════════════════════════════════════════════════════════════════════════════
+BACKEND: FastAPI endpoint to replace your old /generate-hamper-image
+(Python pseudocode — adapt to your actual FastAPI structure)
+══════════════════════════════════════════════════════════════════════════════
+
+import httpx, base64, google.generativeai as genai
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+router = APIRouter()
+genai.configure(api_key=settings.GEMINI_API_KEY)
+
+class HamperImageRequest(BaseModel):
+    vessel: dict
+    items: list[dict]          # each item has .image (URL), .name, .price, .country
+    gift_card: dict | None
+    occasion: str | None
+
+@router.post("/generate-hamper-image")
+async def generate_hamper_image(req: HamperImageRequest):
+    async with httpx.AsyncClient() as client:
+        parts = []
+
+        # 1. Fetch vessel image
+        if req.vessel.get("image"):
+            r = await client.get(req.vessel["image"])
+            b64 = base64.b64encode(r.content).decode()
+            mime = r.headers.get("content-type", "image/jpeg").split(";")[0]
+            parts.append({"inline_data": {"mime_type": mime, "data": b64}})
+            parts.append({"text": f'This is the vessel: {req.vessel["name"]} ({req.vessel.get("material","")})'})
+
+        # 2. Fetch each product image
+        for item in req.items:
+            if item.get("image"):
+                r = await client.get(item["image"])
+                b64 = base64.b64encode(r.content).decode()
+                mime = r.headers.get("content-type", "image/jpeg").split(";")[0]
+                parts.append({"inline_data": {"mime_type": mime, "data": b64}})
+                parts.append({"text": f'Product: "{item["name"]}" from {item.get("country","")} — ₹{item["price"]}'})
+
+        # 3. Add composition prompt
+        occasion = req.occasion or req.gift_card.get("occasion","special occasion") if req.gift_card else "special occasion"
+        parts.append({"text": f"""
+You are a luxury gift hamper composer for Da Fruito.
+Using ONLY the actual product images provided above, compose a photorealistic
+top-down gift hamper preview. Arrange all products artfully inside the vessel shown.
+Add gold ribbon, warm moody lighting, dark background. Label each product in gold text.
+Add 'Da Fruito' branding. Occasion: {occasion}. Output as square image.
+"""})
+
+    # 4. Call Gemini image generation
+    model = genai.GenerativeModel("gemini-2.0-flash-preview-image-generation")
+    response = model.generate_content(
+        parts,
+        generation_config=genai.GenerationConfig(response_modalities=["IMAGE","TEXT"])
+    )
+
+    # 5. Extract image from response
+    for part in response.candidates[0].content.parts:
+        if hasattr(part, "inline_data") and part.inline_data.data:
+            mime = part.inline_data.mime_type
+            data_url = f"data:{mime};base64,{part.inline_data.data}"
+            return {"image_data_url": data_url}
+
+    raise HTTPException(status_code=500, detail="Gemini did not return an image")
+
+
+──────────────────────────────────────────────────────────────────────────────
+PROXY ENDPOINT (needed if product images have CORS restrictions):
+──────────────────────────────────────────────────────────────────────────────
+
+class ProxyImageRequest(BaseModel):
+    url: str
+
+@router.post("/proxy-image")
+async def proxy_image(req: ProxyImageRequest):
+    async with httpx.AsyncClient() as client:
+        r = await client.get(req.url, follow_redirects=True)
+        b64 = base64.b64encode(r.content).decode()
+        mime = r.headers.get("content-type", "image/jpeg").split(";")[0]
+        return {"base64": b64, "mime_type": mime}
+*/
